@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.swing.JOptionPane
 
 
@@ -30,28 +32,65 @@ class UserServiceJPA(
             throw Exception("Please try other email")
         }
         isBirthdateValid(user.birthDate)
-        isRoleValid(user.userRoles)
+//      Get valid list for roles, if everything is null or empty string default role will be "player"
+        user.userRoles = isRoleValid(user.userRoles)
         var userBoundary = this.converter.toBoundary(this.crud.save(this.converter.toEntity(user)))
         userBoundary.password = null
         return userBoundary
     }
 
-    private fun isRoleValid(userRoles: List<String>?) {
-        if (userRoles != null) {
-            for(role in userRoles) {
-//                return MutableList
+    @Transactional(readOnly = true)
+    override fun getSpecificUser(email: String): Optional<UserBoundary> {
+        return this.crud
+            .findById(email)
+            .map {
+                var userBoundary = this.converter.toBoundary(it)
+                userBoundary.password = null
+                return@map userBoundary
             }
+    }
+
+    override fun login(email: String, password: String): Optional<UserBoundary> {
+        return this.crud
+            .findByEmailAndPassword(email,password)
+            .map {
+                var userBoundary = this.converter.toBoundary(it)
+                userBoundary.password = null
+                return@map userBoundary
+            }
+    }
+
+    override fun deleteAll() {
+        this.crud
+            .deleteAll()
+    }
+
+    private fun isRoleValid(userRoles: List<String>?): MutableList<String> {
+        var values = mutableListOf<String>()
+        if (userRoles != null){
+            values =  userRoles.toMutableList()
+            values.removeIf { it == null || it == "" }
         }
+        if( values == null || values.size == 0){
+            values?.add("player")
+        }
+        return values
+
     }
 
     private fun isBirthdateValid(birthDate: String?) {
         var format = "dd-MM-yyyy"
-        var sdf = SimpleDateFormat(format)
+        var sdf = DateTimeFormatter.ofPattern(format)
+//        var sdf = SimpleDateFormat(format)
+//        sdf.isLenient = false
+
         try {
             sdf.parse(birthDate)
-        } catch (e: ParseException) {
+        } catch (e: ParseException ) {
             throw Exception("Please fill your birthdate on next format dd-MM-yyyy")
-        } // valid will still be false
+        } catch (e: Exception ){
+            throw Exception("Please fill your birthdate on next format dd-MM-yyyy")
+        }// valid will still be false
     }
 
     private fun isEmailValid(email: String?) {

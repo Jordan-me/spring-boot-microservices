@@ -1,10 +1,11 @@
 # README #
 
+Check our OPEN API on SWAGGER-UI : http://localhost:8081/swagger-ui/index.html  
 Cloud Computing 2023a course is a repository of examples, sample projects, and code sections covered through the Afeka's Cloud Computing Class
 
 ### What is this repository for? ###
 
-* Sample Code Snippets
+* Sample Code Assignments
 * Sample Code Projects
 * Version: 2023a
 

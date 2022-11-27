@@ -22,26 +22,29 @@ class UserController (
     @RequestMapping(
         path = ["/users/byEmail/{email}"],
         method = [RequestMethod.GET],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun getUsersByEmail(@PathVariable email: String): UserBoundary {
-      TODO("Return existing user with that email on db --> if there is none return ERROR CODE: 404 or 401." +
-              " please do not expose the password. return all user's detail except the password.")
-        return UserBoundary()
+//      Return existing user with that email on db --> if there is none return ERROR CODE: 404
+//       please do not expose the password. return all user's detail except the password.
+        return this.userService
+            .getSpecificUser(email)
+            .orElseThrow { UserNotFoundException("could not find user by email $email") }
     }
 
     @RequestMapping(
         path = ["/users/login/{email}"],
         method = [RequestMethod.GET],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun login(@PathVariable email: String, @RequestParam(name = "password") password:String): UserBoundary {
-        TODO("Return existing user with that email on db --> if there is none or the email and password " +
-                "are not match return ERROR CODE: 404 or 401." +
-                "please do not expose the password. return all user's detail except the password.")
-        return UserBoundary()
+//     Return existing user with that email on db --> if there is none or the email and password are not match return ERROR CODE: 404
+//     please do not expose the password. return all user's detail except the password.
+        return this.userService
+            .login(
+               email, password
+            )
+            .orElseThrow { UserNotFoundException("could not find user") }
     }
 
     @RequestMapping(
@@ -61,7 +64,9 @@ class UserController (
         method = [RequestMethod.DELETE]
     )
     fun deleteAllUsers() {
-        TODO("DELETE all users on db")
+//     DELETE all users on db
+        this.userService
+            .deleteAll()
     }
 
     @RequestMapping(

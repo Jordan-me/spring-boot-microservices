@@ -2,7 +2,9 @@ package serviceusers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
 @Component
 class UserConverter {
@@ -26,10 +28,17 @@ class UserConverter {
         boudary.name = Name()
         boudary.name!!.firstName = entity.firstName
         boudary.name!!.lastName = entity.lastName
-        boudary.birthDate = entity.birthDate.toString()
+        val printFormat = SimpleDateFormat("dd-MM-yyyy")
+        boudary.birthDate = printFormat.format(entity.birthDate)
+//        val calendar = GregorianCalendar()
+//        val mFormat = DecimalFormat("00");
+//        calendar.time = entity.birthDate
+//        boudary.birthDate = "${mFormat.format(calendar.get(Calendar.DAY_OF_MONTH))}-${mFormat.format(calendar.get(Calendar.MONTH))}-${calendar.get(Calendar.YEAR)}"
+//            entity.birthDate.toString()
         boudary.userRoles = ObjectMapper().readValue(entity.userRoles, List::class.java) as List<String>
 
         return boudary
     }
+
 
 }
