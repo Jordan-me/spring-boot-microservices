@@ -76,10 +76,12 @@ class UserController (
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun searchUserByAttribute(
-        @RequestParam(name = "size") size:Int,
-        @RequestParam(name = "page") page:Int,
-        @RequestParam(name = "sortBy") sortAttribute:String,
-        @RequestParam(name = "sortOrder") sortOrder:String
+        @RequestParam(name = "criteriaType", required = false, defaultValue = "") criteriaType:String,
+        @RequestParam(name = "criteriaValue", required = false, defaultValue = "") criteriaValue:String,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size:Int,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "email") sortAttribute:String,
+        @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String
                         ): List<UserBoundary> {
         TODO("returns an array of all the users already saved in the service and enables pagination." +
                 "Please note that this action also does not reveal user passwords" +
