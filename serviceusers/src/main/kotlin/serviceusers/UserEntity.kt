@@ -14,6 +14,6 @@ class UserEntity() {
     var password: String? = null
     var firstName: String? = null
     var lastName: String? = null
-    @Temporeal(TemporalType.Date) var birthDate: Date? = null
+    @Temporal(TemporalType.DATE) var birthDate: Date? = null
     var userRoles: String? = null
 }

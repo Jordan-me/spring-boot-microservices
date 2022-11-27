@@ -63,7 +63,7 @@ class UserServiceJPA(
     private fun isPasswordValid(password: String?) {
         val minLength = 8
         if(password.isNullOrEmpty() || password.length < minLength || !password.matches(Regex(".*\\d+.*"))){
-            throw Exception("Invalid Password- You need to enter at least $minLength characters and at least one digit")
+            throw Exception("Invalid Password - You need to enter at least $minLength characters and at least one digit")
         }
     }
 }
