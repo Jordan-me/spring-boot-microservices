@@ -53,9 +53,9 @@ class UserController (
         consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun update(@PathVariable email: String, @RequestBody user:UserBoundary) {
-        TODO("Update existing user with that email on db --> if there is none\n" +
-                "return ERROR CODE: 404 or 401.\n" +
-                "please do not allow to change the email attribute .")
+//        TODO Update existing user with that email on db --> if there is none\n
+//             return ERROR CODE: 404 or 401. please do not allow to change the email attribute
+        this.userService.updateUser(email,user)
 
     }
 

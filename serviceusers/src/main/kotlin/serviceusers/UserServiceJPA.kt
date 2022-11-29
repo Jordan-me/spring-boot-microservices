@@ -1,6 +1,5 @@
 package serviceusers
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.validator.routines.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
@@ -9,13 +8,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
-import javax.swing.JOptionPane
-
-
 
 
 @Service
@@ -135,6 +130,29 @@ class UserServiceJPA(
                 return@map userBoundary
             }
             .collect(Collectors.toList())
+    }
+    @Transactional
+    override fun updateUser(email: String, user: UserBoundary) {
+        val updateUser = this.getSpecificUser(email)
+                            .orElseThrow { UserNotFoundException("could not find user by email $email") }
+        if(user.password != null){
+            updateUser.password = user.password
+            isPasswordValid(updateUser.password)
+        }
+        if(user.name != null){
+            updateUser.name = user.name
+            if(updateUser.name?.firstName.isNullOrEmpty() || updateUser.name?.lastName.isNullOrEmpty()){
+                throw Exception("Please fill your first & last name")
+            }
+        }
+        if(user.birthDate != null){
+            updateUser.birthDate = user.birthDate
+            isBirthdateValid(updateUser.birthDate)
+        }
+        if(user.userRoles != null){
+            updateUser.userRoles = isRoleValid(user.userRoles)
+        }
+        this.converter.toBoundary(this.crud.save(this.converter.toEntity(updateUser)))
     }
 
     private fun isRoleValid(userRoles: List<String>?): MutableList<String> {

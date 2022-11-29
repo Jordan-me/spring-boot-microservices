@@ -13,4 +13,4 @@ Cloud Computing 2023a course is a repository of examples, sample projects, and c
 
 * Clone this repository
 * Note that we are about to create sub projects within this repository
-* Pick the proper subproject for your purposes
+* Pick the proper subproject for your purpogses
