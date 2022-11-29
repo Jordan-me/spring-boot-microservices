@@ -1,13 +1,18 @@
 package serviceusers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.validator.routines.EmailValidator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.stream.Collectors
 import javax.swing.JOptionPane
 
 
@@ -49,7 +54,7 @@ class UserServiceJPA(
                 return@map userBoundary
             }
     }
-
+    @Transactional(readOnly = true)
     override fun login(email: String, password: String): Optional<UserBoundary> {
         return this.crud
             .findByEmailAndPassword(email,password)
@@ -59,10 +64,77 @@ class UserServiceJPA(
                 return@map userBoundary
             }
     }
-
+    @Transactional
     override fun deleteAll() {
         this.crud
             .deleteAll()
+    }
+
+    @Transactional(readOnly = true)
+    override fun search(
+        criteriaType: String,
+        criteriaValue: String,
+        size: Int,
+        page: Int,
+        sortAttribute: String,
+        sortOrder: String
+    ): List<UserBoundary> {
+        when (criteriaType) {
+            "byEmailDomain" -> {
+                return this.crud
+                    .findAllByEmailLike("%@${criteriaValue}", PageRequest.of(page, size,
+                        getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+                    .stream()
+                    .map {
+                        var userBoundary = this.converter.toBoundary(it)
+                        userBoundary.password = null
+                        return@map userBoundary
+                    }
+                    .collect(Collectors.toList())
+            }
+            "byBirthYear" -> {
+                try {
+                    val birthYear = Integer.parseInt(criteriaValue)
+                } catch (nfe: NumberFormatException) {
+                    // not a valid int
+                    throw InputException("$criteriaValue is not valid - enter Integer")
+                }
+                val startDate = SimpleDateFormat("dd-MM-yyyy").parse("01-01-$criteriaValue")
+                val finalDate = SimpleDateFormat("dd-MM-yyyy").parse("31-12-$criteriaValue")
+                return this.crud
+                    .findAllByBirthDateBetween(startDate,finalDate, PageRequest.of(page, size,
+                        getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+                    .stream()
+                    .map {
+                        var userBoundary = this.converter.toBoundary(it)
+                        userBoundary.password = null
+                        return@map userBoundary
+                    }
+                    .collect(Collectors.toList())
+            }
+            "byRole" -> {
+                return this.crud
+                    .findAllByUserRolesLike("%${criteriaValue}%", PageRequest.of(page, size,
+                        getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+                    .stream()
+                    .map {
+                        var userBoundary = this.converter.toBoundary(it)
+                        userBoundary.password = null
+                        return@map userBoundary }
+                    .collect(Collectors.toList())
+            }
+        }
+        if(criteriaType != "")
+            throw InputException("$criteriaType is not valid - either byEmailDomain or byBirthYear or byRole or empty string")
+        return this.crud
+            .findAll(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+            .stream()
+            .map {
+                var userBoundary = this.converter.toBoundary(it)
+                userBoundary.password = null
+                return@map userBoundary
+            }
+            .collect(Collectors.toList())
     }
 
     private fun isRoleValid(userRoles: List<String>?): MutableList<String> {
@@ -104,5 +176,18 @@ class UserServiceJPA(
         if(password.isNullOrEmpty() || password.length < minLength || !password.matches(Regex(".*\\d+.*"))){
             throw Exception("Invalid Password - You need to enter at least $minLength characters and at least one digit")
         }
+    }
+    private fun getSortOrder(sortOrder: String): Any {
+        if (sortOrder != "DESC" && sortOrder!= "ASC")
+            throw InputException("$sortOrder is not valid - either ASC or DESC")
+        if(sortOrder == "DESC"){
+            return  Sort.Direction.DESC
+        }
+        return Sort.Direction.ASC
+    }
+    private fun getSortAttribute(sortAttribute: String): String? {
+        if (sortAttribute != "firstName" && sortAttribute != "lastName" && sortAttribute != "birthDate" && sortAttribute != "email")
+            throw InputException("$sortAttribute is not valid")
+        return sortAttribute
     }
 }

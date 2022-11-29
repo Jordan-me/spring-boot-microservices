@@ -36,7 +36,6 @@ class UserConverter {
 //        boudary.birthDate = "${mFormat.format(calendar.get(Calendar.DAY_OF_MONTH))}-${mFormat.format(calendar.get(Calendar.MONTH))}-${calendar.get(Calendar.YEAR)}"
 //            entity.birthDate.toString()
         boudary.userRoles = ObjectMapper().readValue(entity.userRoles, List::class.java) as List<String>
-
         return boudary
     }
 

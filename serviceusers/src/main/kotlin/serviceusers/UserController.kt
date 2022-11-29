@@ -72,7 +72,6 @@ class UserController (
     @RequestMapping(
         path = ["/users/search"],
         method = [RequestMethod.GET],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun searchUserByAttribute(
@@ -83,69 +82,16 @@ class UserController (
         @RequestParam(name = "sortBy", required = false, defaultValue = "email") sortAttribute:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String
                         ): List<UserBoundary> {
-        TODO("returns an array of all the users already saved in the service and enables pagination." +
-                "Please note that this action also does not reveal user passwords" +
-                "sortBy = email/firstName/lastName/birthdate, default value = email" +
-                "sortOrder = ASC/DESC, default value = ASC." +
-                "return empty array if there is not compatible result")
+        return this.userService
+            .search(
+                criteriaType,
+                criteriaValue,
+                size,
+                page,
+                sortAttribute,
+                sortOrder
+            )
 
     }
 
-//    @RequestMapping(
-//        path = ["/users/search"],
-//        method = [RequestMethod.GET],
-//        consumes = [MediaType.APPLICATION_JSON_VALUE],
-//        produces = [MediaType.APPLICATION_JSON_VALUE]
-//    )
-//    fun searchUserByEmailDomain(
-//        @RequestParam(name = "criteriaType") byEmailDomain:String,
-//        @RequestParam(name = "criteriaValue") domainValue:String,
-//        @RequestParam(name = "size") size:Int,
-//        @RequestParam(name = "page") page:Int,
-//        @RequestParam(name = "sortBy") sortAttribute:String,
-//        @RequestParam(name = "sortOrder") sortOrder:String
-//    ): List<UserBoundary> {
-//        TODO("returns an array of users whose email address belongs to a certain domain (DOMAIN)" +
-//                " passed as a value parameter and enables pagination. " +
-//                "If there are no suitable users to return, the operation will return an empty array.\n" +
-//                "Please note that this action also does not reveal user passwords")
-//    }
-//    @RequestMapping(
-//        path = ["/users/search"],
-//        method = [RequestMethod.GET],
-//        consumes = [MediaType.APPLICATION_JSON_VALUE],
-//        produces = [MediaType.APPLICATION_JSON_VALUE]
-//    )
-//    fun searchUserByBirthYear(
-//        @RequestParam(name = "criteriaType") byBirthYear:String,
-//        @RequestParam(name = "criteriaValue") birthYearValue:String,
-//        @RequestParam(name = "size") size:Int,
-//        @RequestParam(name = "page") page:Int,
-//        @RequestParam(name = "sortBy") sortAttribute:String,
-//        @RequestParam(name = "sortOrder") sortOrder:String
-//    ): List<UserBoundary> {
-//        TODO("returns an array of users whose BirthYear belongs to a certain BirthYear" +
-//                " passed as a value parameter and enables pagination. " +
-//                "If there are no suitable users to return, the operation will return an empty array.\n" +
-//                "Please note that this action also does not reveal user passwords")
-//    }
-//    @RequestMapping(
-//        path = ["/users/search"],
-//        method = [RequestMethod.GET],
-//        consumes = [MediaType.APPLICATION_JSON_VALUE],
-//        produces = [MediaType.APPLICATION_JSON_VALUE]
-//    )
-//    fun searchUserByRole(
-//        @RequestParam(name = "criteriaType") byRole:String,
-//        @RequestParam(name = "criteriaValue") roleValue:String,
-//        @RequestParam(name = "size") size:Int,
-//        @RequestParam(name = "page") page:Int,
-//        @RequestParam(name = "sortBy") sortAttribute:String,
-//        @RequestParam(name = "sortOrder") sortOrder:String
-//    ): List<UserBoundary> {
-//        TODO("returns an array of users whose Role belongs to a certain Role" +
-//                " passed as a value parameter and enables pagination. " +
-//                "If there are no suitable users to return, the operation will return an empty array.\n" +
-//                "Please note that this action also does not reveal user passwords")
-//    }
 }
