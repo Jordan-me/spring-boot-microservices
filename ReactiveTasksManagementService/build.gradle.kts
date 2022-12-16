@@ -5,7 +5,6 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.15.RELEASE"
 	kotlin("jvm") apply true
 	kotlin("plugin.spring") apply true
-	kotlin("plugin.jpa") apply true
 }
 
 group = "com.example"
@@ -17,18 +16,22 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
-	implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webflux-ui
+	implementation("org.springdoc:springdoc-openapi-webflux-ui:1.6.13")
 
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-kotlin
 	runtimeOnly("org.springdoc:springdoc-openapi-kotlin:1.6.13")
+
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("io.projectreactor:reactor-test")
 }
 
 tasks.withType<KotlinCompile> {

@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Mono
 import java.util.*
 import java.util.stream.Collectors
 
@@ -15,30 +16,31 @@ class TaskServiceMongo(
 ): TaskService {
 
     @Transactional
-    override fun create(task: TaskBoundary): TaskBoundary {
+    override fun create(task: TaskBoundary): Mono<TaskBoundary> {
         task.taskId = null
         task.createdTimestamp = Date()
-        return this.converter
-            .toBoundary(
-                this.crud
-                    .save(
-                        this.converter
-                            .toEntity(
-                                task)))
+
+        return Mono.just(task)
+            .log()
+            .map { this.converter.toEntity(it) }
+            .flatMap { this.crud.save(it) }
+            .map { this.converter.toBoundary(it) }
+            .log()
     }
 
     @Transactional(readOnly = true)
-    override fun getSpecificTask(taskId: String): Optional<TaskBoundary> {
+    override fun getSpecificTask(taskId: String): Mono<TaskBoundary> {
         return this.crud
             .findById(taskId)
-            .map {
-                this.converter.toBoundary(it)
-            }
+            .map{this.converter.toBoundary(it)}
+            .log()
     }
+
     @Transactional
-    override fun deleteAll() {
-        this.crud
+    override fun cleanup(): Mono<Void> {
+        return this.crud
             .deleteAll()
+            .log()
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ class TaskServiceMongo(
         sortOrder: String,
         size: Int,
         page: Int
-    ): List<TaskBoundary> {
+    ): Flux<TaskBoundary> {
         when (filterType) {
             "bySubject" -> {
                 return this.crud

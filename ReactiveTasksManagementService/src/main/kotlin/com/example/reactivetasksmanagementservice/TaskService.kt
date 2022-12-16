@@ -1,11 +1,12 @@
 package com.example.reactivetasksmanagementservice
 
-import java.util.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 interface TaskService {
-    fun create(task: TaskBoundary): TaskBoundary
-    fun getSpecificTask(taskId: String): Optional<TaskBoundary>
-    fun deleteAll()
+    fun create(task: TaskBoundary): Mono<TaskBoundary>
+    fun getSpecificTask(taskId: String): Mono<TaskBoundary>
+    fun cleanup(): Mono<Void>
     fun search(
         filterType: String,
         filterValue: String,
@@ -13,6 +14,6 @@ interface TaskService {
         sortOrder: String,
         size: Int,
         page: Int
-    ): List<TaskBoundary>
+    ): Flux<TaskBoundary>
 
 }

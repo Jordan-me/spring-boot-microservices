@@ -3,6 +3,8 @@ package com.example.reactivetasksmanagementservice
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @RestController
 class TasksController(
@@ -15,7 +17,7 @@ class TasksController(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun create(@RequestBody task:TaskBoundary):TaskBoundary{
+    fun create(@RequestBody task:TaskBoundary): Mono<TaskBoundary> {
         return this.taskService.create(task)
     }
     @RequestMapping(
@@ -23,19 +25,18 @@ class TasksController(
         method = [RequestMethod.GET],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun getTaskById(@PathVariable taskId: String): TaskBoundary {
+    fun getTaskById(@PathVariable taskId: String): Mono<TaskBoundary> {
         return this.taskService
             .getSpecificTask(taskId)
-            .orElseThrow { TaskNotFoundException("could not find task by id $taskId") }
     }
 
     @RequestMapping(
         path = ["/tasks"],
         method = [RequestMethod.DELETE]
     )
-    fun deleteAllTasks() {
-        this.taskService
-            .deleteAll()
+    fun deleteAllTasks(): Mono<Void> {
+        return this.taskService
+            .cleanup()
     }
 
     @RequestMapping(
@@ -50,7 +51,7 @@ class TasksController(
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size:Int
-    ): List<TaskBoundary> {
+    ): Flux<TaskBoundary> {
         return this.taskService
             .search(
                 filterType,
