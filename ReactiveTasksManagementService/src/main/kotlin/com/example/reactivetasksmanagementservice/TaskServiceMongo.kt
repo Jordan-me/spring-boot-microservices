@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
 import java.util.stream.Collectors
@@ -32,7 +33,7 @@ class TaskServiceMongo(
     override fun getSpecificTask(taskId: String): Mono<TaskBoundary> {
         return this.crud
             .findById(taskId)
-            .map{this.converter.toBoundary(it)}
+            .map { this.converter.toBoundary(it) }
             .log()
     }
 
@@ -57,31 +58,28 @@ class TaskServiceMongo(
                 return this.crud
                     .findAllBySubject(filterValue, PageRequest.of(page, size,
                         getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
-                    .stream()
                     .map {
                         this.converter.toBoundary(it)
                     }
-                    .collect(Collectors.toList())
+                    .log()
             }
             "byCreatorEmail" -> {
                 return this.crud
                     .findAllByCreator(filterValue, PageRequest.of(page, size,
                         getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
-                        .stream()
                         .map {
                             this.converter.toBoundary(it)
                         }
-                        .collect(Collectors.toList())
+                        .log()
             }
             "byStatus" -> {
                 return this.crud
                     .findAllByStatus(filterValue, PageRequest.of(page, size,
                         getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
-                    .stream()
                     .map {
                         this.converter.toBoundary(it)
                     }
-                    .collect(Collectors.toList())
+                    .log()
             }
             "createdInRange" -> {
                 TODO("there is a query need implementation here")
@@ -98,22 +96,20 @@ class TaskServiceMongo(
                 return this.crud
                     .findAllByAssociatedUsersContains(filterValue, PageRequest.of(page, size,
                         getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
-                    .stream()
                     .map {
                         this.converter.toBoundary(it)
                     }
-                    .collect(Collectors.toList())
+                    .log()
             }
         }
         if(filterType != "")
             throw InputException("$filterType is not valid option")
         return this.crud
             .findAll(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
-            .stream()
             .map {
                 this.converter.toBoundary(it)
             }
-            .collect(Collectors.toList())
+            .log()
     }
     private fun getSortOrder(sortOrder: String): Any {
         if (sortOrder != "DESC" && sortOrder!= "ASC")
