@@ -2,3 +2,4 @@ rootProject.name = '2023a_cloud_solution'
 
 include 'serviceusers'
 include 'ReactiveTasksManagementService'
+include 'ReactiveTasksManagementR2DBCService'
