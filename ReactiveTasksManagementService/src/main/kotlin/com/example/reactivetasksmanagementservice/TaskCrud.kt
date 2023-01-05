@@ -32,4 +32,8 @@ interface TaskCrud : ReactiveMongoRepository<TaskEntity, String> {
         @Param("email") email: String,
         pageable: Pageable
     ):Flux<TaskEntity>
+
+    fun findByTaskIdNotNull(
+        pageable: Pageable
+    ): Flux<TaskEntity>
 }

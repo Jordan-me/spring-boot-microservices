@@ -105,7 +105,7 @@ class TaskServiceMongo(
         if(filterType != "")
             throw InputException("$filterType is not valid option")
         return this.crud
-            .findAll(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+            .findByTaskIdNotNull(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
             .map {
                 this.converter.toBoundary(it)
             }
