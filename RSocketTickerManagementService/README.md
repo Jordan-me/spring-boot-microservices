@@ -1,22 +1,8 @@
 # Getting Started
 
-### Reference Documentation
-For further reference, please consider the following sections:
+### How do I get set up?
+For client Rsocket command line install [RSocket client](https://github.com/making/rsc/releases)
+clone this repository
+Note that this is subproject so make sure to do build for the project and then for the service you interest for (Ticker service)
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/3.0.0/gradle-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.0.0/gradle-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.0.0/reference/htmlsingle/#web)
-
-### Guides
-The following guides illustrate how to use some features concretely:
-
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-
-### Additional Links
-These additional references should also help you:
-
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
-
+Before you running the service it is important that you will upload mongo image from docker, this subproject will create tickersdb as database and TICKERS collection inside it.
