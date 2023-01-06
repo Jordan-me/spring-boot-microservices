@@ -47,6 +47,8 @@ class TasksController(
     fun searchUserByAttribute(
         @RequestParam(name = "filterType", required = false, defaultValue = "") filterType:String,
         @RequestParam(name = "filterValue", required = false, defaultValue = "") filterValue:String,
+        @RequestParam(name = "fromDate", required = false, defaultValue = "") fromDate:String,
+        @RequestParam(name = "toDate", required = false, defaultValue = "") toDate:String,
         @RequestParam(name = "sortBy", required = false, defaultValue = "taskId") sortAttribute:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
@@ -56,6 +58,8 @@ class TasksController(
             .search(
                 filterType,
                 filterValue,
+                fromDate,
+                toDate,
                 sortAttribute,
                 sortOrder,
                 size,

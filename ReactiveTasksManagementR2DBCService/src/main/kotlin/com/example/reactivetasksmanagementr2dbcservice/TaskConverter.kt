@@ -1,8 +1,6 @@
 package com.example.reactivetasksmanagementr2dbcservice
 
 import org.springframework.stereotype.Component
-import java.util.*
-
 @Component
 class TaskConverter {
     fun toBoundary(entity: TaskEntity) : TaskBoundary {
@@ -24,10 +22,12 @@ class TaskConverter {
     }
     fun toEntity (boundary: TaskBoundary): TaskEntity {
         var entity = TaskEntity()
-
         if (boundary.taskId != null) {
             entity.taskId = boundary.taskId!!
         }
+//        else{
+//            entity.taskId = UUID.randomUUID().toString()
+//        }
         entity.subject = boundary.subject
         val separator = ", "
         entity.categories = boundary.categories?.joinToString(separator)

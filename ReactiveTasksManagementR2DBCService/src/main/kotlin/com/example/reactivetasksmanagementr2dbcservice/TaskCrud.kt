@@ -1,13 +1,12 @@
 package com.example.reactivetasksmanagementr2dbcservice
 
+//import org.springframework.data.r2dbc.repository.R2dbcRepository
 import org.springframework.data.domain.Pageable
-import org.springframework.data.r2dbc.repository.R2dbcRepository
-//import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.data.repository.query.Param
-//import org.springframework.data.repository.reactive.ReactiveCrudRepository
+import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import reactor.core.publisher.Flux
 
-interface TaskCrud : R2dbcRepository<TaskEntity, String> {
+interface TaskCrud : ReactiveCrudRepository<TaskEntity, String> {
 
     fun findAllBySubject(
         @Param("subject") subject: String,
@@ -35,7 +34,7 @@ interface TaskCrud : R2dbcRepository<TaskEntity, String> {
         pageable: Pageable
     ):Flux<TaskEntity>
 
-    fun findByTaskIdNotNull(
-        pageable: Pageable
-    ): Flux<TaskEntity>
+//    fun findByTaskIdNotNull(
+//        pageable: Pageable
+//    ): Flux<TaskEntity>
 }

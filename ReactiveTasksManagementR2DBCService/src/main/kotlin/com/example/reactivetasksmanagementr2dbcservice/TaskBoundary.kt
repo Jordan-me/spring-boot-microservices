@@ -1,12 +1,13 @@
 package com.example.reactivetasksmanagementr2dbcservice
 
+import java.time.LocalDate
 import java.util.*
 
 class TaskBoundary {
     var taskId: String? = null
     var subject: String? = null
     var categories: List<String>? = null
-    var createdTimestamp: Date? = null
+    var createdTimestamp: LocalDate? = null
     var creator: String? = null
     var associatedUsers: List<String>? = null
     var status: String? = null

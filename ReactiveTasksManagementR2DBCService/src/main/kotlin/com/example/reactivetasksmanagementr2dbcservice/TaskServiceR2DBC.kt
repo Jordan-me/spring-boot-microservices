@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 import java.util.*
 
 @Service
@@ -15,10 +16,10 @@ class TaskServiceR2DBC(
     @Autowired val converter: TaskConverter
 ): TaskService {
 
-    @Transactional
+//    @Transactional
     override fun create(task: TaskBoundary): Mono<TaskBoundary> {
         task.taskId = null
-        task.createdTimestamp = Date()
+        task.createdTimestamp = LocalDate.now()
 
         return Mono.just(task)
             .log()
@@ -28,7 +29,7 @@ class TaskServiceR2DBC(
             .log()
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     override fun getSpecificTask(taskId: String): Mono<TaskBoundary> {
         return this.crud
             .findById(taskId)
@@ -36,7 +37,7 @@ class TaskServiceR2DBC(
             .log()
     }
 
-    @Transactional
+//    @Transactional
     override fun cleanup(): Mono<Void> {
         return this.crud
             .deleteAll()
@@ -47,6 +48,8 @@ class TaskServiceR2DBC(
     override fun search(
         filterType: String,
         filterValue: String,
+        fromDate: String,
+        toDate: String,
         sortAttribute: String,
         sortOrder: String,
         size: Int,
@@ -81,15 +84,13 @@ class TaskServiceR2DBC(
                     .log()
             }
             "createdInRange" -> {
-                TODO("there is a query need implementation here")
-//                return this.crud
-//                    .findAllByCreatedTimestampBetween(fromDate,toDate, PageRequest.of(page, size,
-//                        getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
-//                    .stream()
-//                    .map {
-//                        this.converter.toBoundary(it)
-//                    }
-//                    .collect(Collectors.toList())
+                return this.crud
+                    .findAllByCreatedTimestampBetween(fromDate,toDate, PageRequest.of(page, size,
+                        getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "taskId"))
+                    .map {
+                        this.converter.toBoundary(it)
+                    }
+                    .log()
             }
             "byAssociatedUser" -> {
                 return this.crud
@@ -103,12 +104,17 @@ class TaskServiceR2DBC(
         }
         if(filterType != "")
             throw InputException("$filterType is not valid option")
-        return this.crud
-            .findByTaskIdNotNull(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+        return this.crud.findAll()
             .map {
-                this.converter.toBoundary(it)
+            this.converter.toBoundary(it)
             }
             .log()
+//        return this.crud
+//            .findByTaskIdNotNull(PageRequest.of(page, size, getSortOrder(sortOrder) as Sort.Direction,getSortAttribute(sortAttribute) , "email"))
+//            .map {
+//                this.converter.toBoundary(it)
+//            }
+//            .log()
     }
     private fun getSortOrder(sortOrder: String): Any {
         if (sortOrder != "DESC" && sortOrder!= "ASC")

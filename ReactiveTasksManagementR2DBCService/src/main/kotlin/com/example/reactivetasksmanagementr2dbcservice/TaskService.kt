@@ -10,6 +10,8 @@ interface TaskService {
     fun search(
         filterType: String,
         filterValue: String,
+        fromDate: String,
+        toDate: String,
         sortAttribute: String,
         sortOrder: String,
         size: Int,
