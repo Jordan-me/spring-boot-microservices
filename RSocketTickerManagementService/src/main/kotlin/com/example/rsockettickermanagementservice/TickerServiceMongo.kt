@@ -22,6 +22,15 @@ class TickerServiceMongo(
             .map { this.converter.toBoundary(it).tickerId!! }
             .log()
     }
+
+    fun getTickers( ids: MutableList<String>?):Flux<TickerBoundary>{
+        val tickerIds = ids ?: emptyList()
+        return Flux.fromIterable(tickerIds)
+            .map { it!! }
+            .flatMap { this.crud.findById(it) }
+            .map { this.converter.toBoundary(it) }
+            .log()
+    }
     override fun create(ticker: TickerBoundary): Mono<TickerBoundary> {
         ticker.tickerId = null
         ticker.publishedTimestamp = Date()
@@ -48,6 +57,24 @@ class TickerServiceMongo(
     }
 
     override fun bindTickers(tickerId: String, relatedTickerIds:  MutableList<String>?) : Mono<Void>{
+//        return  getExistingIds(relatedTickerIds)
+//            .map { id->
+//                this.crud.findById(id)
+//                    .zipWith(
+//                        this.crud.findById(tickerId)
+//                    ).map {tuple->
+//                        if (!tuple.t1.relatedTickerIds!!.contains(tuple.t2.tickerId!!)){
+//                            tuple.t1.relatedTickerIds!!.add(tuple.t2.tickerId!!)
+//                            this.crud.save(tuple.t1)
+//                        }
+//                        if (!tuple.t2.relatedTickerIds!!.contains(tuple.t1.tickerId!!)){
+//                            tuple.t2.relatedTickerIds!!.add(tuple.t1.tickerId!!)
+//                            this.crud.save(tuple.t2)
+//                        }
+//                    }
+//            }
+//            .then()
+
         return this.crud
             .findById(tickerId)
             .zipWith(
@@ -56,7 +83,17 @@ class TickerServiceMongo(
                 tuple.t1.relatedTickerIds?.addAll(tuple.t2)
                 this.crud
                     .save(tuple.t1)
-            }
+            }.thenMany(
+                getTickers(relatedTickerIds)
+                .map {relatedBoundary->
+                    Mono.just(this.converter.toEntity(relatedBoundary))
+                        .flatMap {
+                            it.relatedTickerIds?.add(tickerId)
+                            this.crud
+                                .save(it)
+                        }
+                }
+            )
             .then()
     }
 
