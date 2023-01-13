@@ -1,8 +1,10 @@
+/.*/build/
 /ScheduleShipManagementService/build/
 /RSocketTickerManagementService/build/
 /rsocketclient/
 /ReactiveTasksManagementService/build/
 /ReactiveTasksManagementR2DBCService/build/
+/RSocketTickerManagementServiceConsumerService/build/
 /serviceusers/build/
 /build/
 /.gradle/
