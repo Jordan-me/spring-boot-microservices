@@ -28,16 +28,19 @@ class TickerControllerRSocket(
 //     java -jar rsc-0.9.1.jar --debug --stream --data "{\"tickerId\":\"1a2bc3d4e5f6\",\"relatedTickerIds\":[\"1a2bc3d4e592", \"1a2bc3d42aab\"]}" --route getAllTickers-stream tcp://localhost:7000
     @MessageMapping("getAllTickers-stream")
     fun getAllTickers(paginationBoundary:PaginationBoundary): Flux<TickerBoundary> {
-        return tickerService.getAllTickers(paginationBoundary.size, paginationBoundary.page)
+        return this.tickerService
+            .getAllTickers(paginationBoundary.size, paginationBoundary.page)
+            .log()
     }
 
     // java -jar rsc-0.9.1.jar --debug --channel --data "{\"tickerId\":\"1a2bc3d4e5f6\"}" --route getTickersByIds-channel tcp://localhost:7000
     @MessageMapping("getTickersByIds-channel")
     fun getTickersByIds(idBoundaries: Flux<IdBoundary>) : Flux<TickerBoundary> {
         return idBoundaries
-            .map { it.tickerId }
-            .flatMap { tickerService.getTickerById(it!!) }
+            .map { it.tickerId!! }
+            .flatMap { tickerService.getTickerById(it) }
             .onErrorContinue { _, _ -> } // ignore errors for not-found tickers
+            .log()
     }
 
 

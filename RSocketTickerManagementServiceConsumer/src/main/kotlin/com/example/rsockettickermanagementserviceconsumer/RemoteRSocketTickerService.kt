@@ -6,7 +6,6 @@ import org.springframework.messaging.rsocket.RSocketRequester
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.*
 import javax.annotation.PostConstruct
 
 @Service
@@ -44,55 +43,26 @@ class RemoteRSocketTickerService(
             .send()
             .log()
     }
-//
-//    override fun bindTickers(tickerId: String?, relatedTickerIds: List<String>?) {
-//        // Find the ticker with the given tickerId
-//        val ticker = tickerId?.let { crud.findById(it) }?.block()
-//        val relatedTickerIdsList = crud.findAll()
-//            .filter { tickerEntity -> relatedTickerIds!!.contains(tickerEntity.tickerId!!) }
-//            .map { it.tickerId }
-//            .collectList()
-//            .block()
-//        val nonNullList: List<String> = relatedTickerIdsList.let { it.orEmpty().filterNotNull().map { it } }
-//        // Update the ticker to have the related tickers
-//        ticker!!.relatedTickerIds?.addAll(nonNullList)
-//        crud.save(ticker)
-//    }
-//
-//    override fun getAllTickers(): Flux<TickerEntity> {
-//        return crud.findAll().switchIfEmpty(Mono.empty())
-//    }
-//
-//    override fun getTickerById(id: String) : Mono<TickerBoundary> {
-//        return Mono.just(converter.toBoundary(crud.findById(id).block()!!))
-//    }
-//
-//    override fun deleteAllTickers(): Mono<Void> {
-//        return crud.deleteAll()
-//    }
-//
-//    override fun getTickersByCompany(company: CompanyBoundary): Flux<TickerBoundary> {
-//        return crud.findByPublisherCompany(company.company!!)
-//            .map { tickerEntity -> converter.toBoundary(tickerEntity) }
-//    }
-//
-//    override fun getRelatedTickers(tickerId: String): Flux<TickerBoundary> {
-//        return crud.findById(tickerId)
-//            .flatMapMany { ticker ->
-//                crud.findAllById(ticker.relatedTickerIds!!)
-//                    .map { converter.toBoundary(it) }
-//            }
-//    }
-//
-//    override fun getTickersByExternalReferences(externalReferences: Flux<ExternalReferenceBoundary>): Flux<TickerBoundary> {
-//        return externalReferences
-//            .flatMap { externalReference ->
-//                crud
-//                    .findByExternalReferencesSystemAndExternalReferencesExternalSystemId(externalReference.system!!,externalReference.externalSystemId!!)
-//                    .map { converter.toBoundary(it) }
-//            }
-//    }
 
+    override fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary> {
+        val paginationData = PaginationBoundary(size, page)
+        return this.rsocketRequester
+            .route("getAllTickers-stream")
+            .data(paginationData)
+            .retrieveFlux(TickerBoundary::class.java)
+            .log()
+    }
+
+    override fun getByIds(ids: IdsBoundary): Flux<TickerBoundary> {
+        val idsFlux = Flux.fromIterable(ids.tickerIds!!)
+            .map { IdBoundary(it) }
+
+        return this.rsocketRequester
+            .route("getTickersByIds-channel")
+            .data(idsFlux)
+            .retrieveFlux(TickerBoundary::class.java)
+            .log()
+    }
 
 }
 
