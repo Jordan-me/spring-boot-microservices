@@ -40,51 +40,51 @@ class TickerController(
         return this.rsocketTickers
             .cleanup()
     }
-
-//    deleteAllTickers-fire-and-forget
-
-//
-////     java -jar rsc-0.9.1.jar --debug --fnf --route bind-tickers-fire-and-forget tcp://localhost:7000
-//    @MessageMapping("bind-tickers-fire-and-forget")
-//    fun bindTickers(request: TickerBindBoundary) {
-//        tickerService.bindTickers(request.tickerId, request.relatedTickerIds)
-//    }
-//
-////     java -jar rsc-0.9.1.jar --debug --stream --data "{\"tickerId\":\"1a2bc3d4e5f6\",\"relatedTickerIds\":[\"1a2bc3d4e592", \"1a2bc3d42aab\"]}" --route getAllTickers-stream tcp://localhost:7000
-//    @MessageMapping("getAllTickers-stream")
-//    fun getAllTickers(): Flux<TickerEntity> {
-//        return tickerService.getAllTickers()
-//    }
-//
-//    // java -jar rsc-0.9.1.jar --debug --channel --data "{\"tickerId\":\"1a2bc3d4e5f6\"}" --route getTickersByIds-channel tcp://localhost:7000
-//    @MessageMapping("getTickersByIds-channel")
-//    fun getTickersByIds(idBoundaries: Flux<IdBoundary>) : Flux<TickerBoundary> {
-//        return idBoundaries
-//            .map { it.tickerId }
-//            .flatMap { tickerService.getTickerById(it!!) }
-//            .onErrorContinue { _, _ -> } // ignore errors for not-found tickers
-//    }
-//
-//
-//    @MessageMapping("deleteAllTickers-fire-and-forget")
-//    fun deleteAllTickers(): Mono<Void> {
-//        return tickerService.deleteAllTickers()
-//    }
-//
-//    @MessageMapping("getCompanyTickers-stream")
-//    fun getCompanyTickers(request: Mono<CompanyBoundary>): Flux<TickerBoundary> {
-//        return request.flatMapMany { company ->
-//            tickerService.getTickersByCompany(company)
-//        }
-//    }
-//
-//    @MessageMapping("getRelatedTickers-channel")
-//    fun getRelatedTickers(ids: Flux<IdBoundary>): Flux<TickerBoundary> {
-//        return ids.flatMap { id ->
-//            tickerService.getRelatedTickers(id.tickerId!!)
-//        }
-//    }
-//
+    @RequestMapping(
+        path = ["/ticker/byCompany/{company}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
+    )
+    fun getTickersByCompany(
+        @PathVariable("company") company:String,
+        @RequestParam(name="size", required = false, defaultValue = "10") size:Int,
+        @RequestParam(name="page", required = false, defaultValue = "0") page:Int
+    ):Flux<TickerBoundary>{
+        return this.rsocketTickers
+            .getTickersByCompany(company, size, page)
+    }
+    @RequestMapping(
+        path = ["/ticker/relatedTickers/{ids}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
+    )
+    fun getRelatedTickers(
+        @PathVariable("ids") ids:String,
+    ):Flux<TickerBoundary>{
+        val list = IdsBoundary(
+            ids.split(",").toTypedArray().toMutableList())
+        return this.rsocketTickers
+            .getRelatedTickers(list)
+    }
+    @RequestMapping(
+        path = ["/ticker/byExternalReferences/{systems}/{externalSystemIds}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
+    )
+    fun getTickersByExternalReferences(
+        @PathVariable("systems") systems:String,
+        @PathVariable("externalSystemIds") externalSystemIds:String,
+    ):Flux<TickerBoundary>{
+        val listIds = externalSystemIds.split(",").toTypedArray().toMutableList()
+        val listExternal = Flux.fromIterable(systems.split(",").toTypedArray().toMutableList())
+            .zipWith(
+                Flux.fromIterable(listIds)
+            ).map {
+                ExternalReferenceBoundary(it.t1,it.t2)
+            }
+        return this.rsocketTickers
+            .getTickersByExternalReferences(listExternal)
+    }
 //    @MessageMapping("getTickersByExternalReferences-channel")
 //    fun getTickersByExternalReferences(externalReferences: Flux<ExternalReferenceBoundary>) : Flux<TickerBoundary> {
 //        return tickerService.getTickersByExternalReferences(externalReferences)

@@ -47,19 +47,17 @@ class TickerServiceMongo(
             )
     }
 
-    override fun bindTickers(tickerId: String, relatedTickerIds: List<String>) : Mono<Void>{
-        val ticker = this.crud.findById(tickerId)
+    override fun bindTickers(tickerId: String, relatedTickerIds:  MutableList<String>?) : Mono<Void>{
         return this.crud
-            .findAllById(relatedTickerIds)
-            .map {relatedId->
-                ticker
-                    .zipWith(Mono.just(relatedId))
-                    .flatMap {
-                        it.t1.relatedTickerIds?.add(it.t2.tickerId!!)
-                        this.crud
-                            .save(it.t1)
-                    }
-            }.then()
+            .findById(tickerId)
+            .zipWith(
+                getExistingIds(relatedTickerIds).collectList()
+            ).flatMap {tuple->
+                tuple.t1.relatedTickerIds?.addAll(tuple.t2)
+                this.crud
+                    .save(tuple.t1)
+            }
+            .then()
     }
 
     override fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary> {
@@ -82,24 +80,24 @@ class TickerServiceMongo(
     }
 
     override fun getTickersByCompany(company: CompanyBoundary): Flux<TickerBoundary> {
-        return crud.findByPublisherCompany(company.company!!)
-            .map { tickerEntity -> converter.toBoundary(tickerEntity) }
+        return this.crud.findByPublisherCompany(company.company!!)
+            .map { tickerEntity -> this.converter.toBoundary(tickerEntity) }
     }
 
     override fun getRelatedTickers(tickerId: String): Flux<TickerBoundary> {
-        return crud.findById(tickerId)
+        return this.crud.findById(tickerId)
             .flatMapMany { ticker ->
-                crud.findAllById(ticker.relatedTickerIds!!)
-                    .map { converter.toBoundary(it) }
+                this.crud.findAllById(ticker.relatedTickerIds!!)
+                    .map { this.converter.toBoundary(it) }
             }
     }
 
     override fun getTickersByExternalReferences(externalReferences: Flux<ExternalReferenceBoundary>): Flux<TickerBoundary> {
         return externalReferences
             .flatMap { externalReference ->
-                crud
+                this.crud
                     .findByExternalReferencesSystemAndExternalReferencesExternalSystemId(externalReference.system!!,externalReference.externalSystemId!!)
-                    .map { converter.toBoundary(it) }
+                    .map { this.converter.toBoundary(it) }
             }
     }
 
