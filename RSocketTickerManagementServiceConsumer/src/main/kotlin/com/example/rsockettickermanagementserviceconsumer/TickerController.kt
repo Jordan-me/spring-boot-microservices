@@ -85,8 +85,27 @@ class TickerController(
         return this.rsocketTickers
             .getTickersByExternalReferences(listExternal)
     }
-//    @MessageMapping("getTickersByExternalReferences-channel")
-//    fun getTickersByExternalReferences(externalReferences: Flux<ExternalReferenceBoundary>) : Flux<TickerBoundary> {
-//        return tickerService.getTickersByExternalReferences(externalReferences)
-//    }
+
+    @RequestMapping(
+        path = ["/ticker"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getAll(@RequestParam(name="size", required = false, defaultValue = "10") size:Int,
+               @RequestParam(name="page", required = false, defaultValue = "0") page:Int):Flux<TickerBoundary>{
+        return this.rsocketTickers
+            .getAllTickers(size, page)
+    }
+
+    @RequestMapping(
+        path = ["/message/byIds/{ids}"],
+        method = [RequestMethod.GET],
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getByIds (@PathVariable("ids") ids:String):Flux<TickerBoundary>{
+        val list = IdsBoundary(
+            ids.split(",").toTypedArray().toMutableList())
+
+        return this.rsocketTickers
+            .getByIds(list)
+    }
+
 }

@@ -75,5 +75,25 @@ class RemoteRSocketTickerService(
             .log()
     }
 
+    override fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary> {
+        val paginationData = PaginationBoundary(size, page)
+        return this.rsocketRequester
+            .route("getAllTickers-stream")
+            .data(paginationData)
+            .retrieveFlux(TickerBoundary::class.java)
+            .log()
+    }
+
+    override fun getByIds(ids: IdsBoundary): Flux<TickerBoundary> {
+        val idsFlux = Flux.fromIterable(ids.ids!!)
+            .map { IdBoundary(it) }
+
+        return this.rsocketRequester
+            .route("getTickersByIds-channel")
+            .data(idsFlux)
+            .retrieveFlux(TickerBoundary::class.java)
+            .log()
+    }
+
 }
 

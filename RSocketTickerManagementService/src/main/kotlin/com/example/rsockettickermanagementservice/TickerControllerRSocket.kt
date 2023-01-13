@@ -29,8 +29,8 @@ class TickerControllerRSocket(
     @MessageMapping("getAllTickers-stream")
     fun getAllTickers(paginationBoundary:PaginationBoundary): Flux<TickerBoundary> {
         return this.tickerService
-                   .getAllTickers(paginationBoundary.size, paginationBoundary.page)
-                    .log()
+            .getAllTickers(paginationBoundary.size, paginationBoundary.page)
+            .log()
     }
 
     // java -jar rsc-0.9.1.jar --debug --channel --data "{\"tickerId\":\"1a2bc3d4e5f6\"}" --route getTickersByIds-channel tcp://localhost:7000

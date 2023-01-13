@@ -11,7 +11,6 @@ interface RemoteTickerService {
     fun getTickersByCompany(company: String, size: Int, page: Int): Flux<TickerBoundary>
     fun getRelatedTickers(list: IdsBoundary): Flux<TickerBoundary>
     fun getTickersByExternalReferences(listExternal: Flux<ExternalReferenceBoundary>): Flux<TickerBoundary>
-//    fun getAllTickers(): Flux<TickerBoundary>
-//    fun getTickerById(id: String) : Mono<TickerBoundary>
-
+    fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary>
+    fun getByIds(ids: IdsBoundary): Flux<TickerBoundary>
 }
