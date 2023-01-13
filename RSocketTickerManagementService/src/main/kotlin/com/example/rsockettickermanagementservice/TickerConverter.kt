@@ -38,5 +38,9 @@ class TickerConverter {
 
     }
 
+    fun convertIdToEntity(id: String): String {
+        return id
+    }
+
 
 }

@@ -5,8 +5,8 @@ import reactor.core.publisher.Mono
 
 interface TickerService {
     fun create(ticker: TickerBoundary): Mono<TickerBoundary>
-    fun bindTickers(tickerId: String?, relatedTickerIds: List<String>?)
-    fun getAllTickers(): Flux<TickerEntity>
+    fun bindTickers(tickerId: String, relatedTickerIds: List<String>): Mono<Void>
+    fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary>
     fun getTickerById(id: String) : Mono<TickerBoundary>
     fun deleteAllTickers(): Mono<Void>
     fun getTickersByCompany(company: CompanyBoundary):Flux<TickerBoundary>

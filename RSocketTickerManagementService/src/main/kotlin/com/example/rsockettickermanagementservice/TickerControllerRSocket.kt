@@ -15,24 +15,20 @@ class TickerControllerRSocket(
 //     java -jar rsc-0.9.1.jar --debug --request --data "{\"tickerId\":\"1a2bc3d4e5f6\",\"publisher\":{\"company\":\"SFO Port Authority\",\"email\":\"jane@sfport.com\"},\"publishedTimestamp\":\"2022-12-22T16:13:57.190+0000\",\"tickerType\":\"generalNotification\",\"summary\":\"Port services function as usual through the holidays season\",\"externalReferences\":[{\"system\":\"SFONotifications\",\"externalSystemId\":\"2022-DEC-22-MSG-5396\"}],\"relatedTickerIds\":[\"1a2bc3d4e592\", \"1a2bc3d42aab\"],\"tickerDetails\":{\"category\":\"General Port Notifications\",\"status\":\"NOTIFIED\"}}" --route publish-ticker-req-resp tcp://localhost:7000
     @MessageMapping("publish-ticker-req-resp")
     fun create (ticker:TickerBoundary): Mono<TickerBoundary> {
-        return Mono.just(ticker)
-            .flatMap {
-                Mono.just(it)
-            }
-            .flatMap {  this.tickerService
-                .create(it)}
-            .log()
+        return this.tickerService.create(ticker)
     }
+
 //     java -jar rsc-0.9.1.jar --debug --fnf --route bind-tickers-fire-and-forget tcp://localhost:7000
     @MessageMapping("bind-tickers-fire-and-forget")
-    fun bindTickers(request: TickerBindBoundary) {
-        tickerService.bindTickers(request.tickerId, request.relatedTickerIds)
+    fun bindTickers(request: TickerBindBoundary): Mono<Void> {
+        return this.tickerService
+            .bindTickers(request.tickerId!!, request.relatedTickerIds!!)
     }
 
 //     java -jar rsc-0.9.1.jar --debug --stream --data "{\"tickerId\":\"1a2bc3d4e5f6\",\"relatedTickerIds\":[\"1a2bc3d4e592", \"1a2bc3d42aab\"]}" --route getAllTickers-stream tcp://localhost:7000
     @MessageMapping("getAllTickers-stream")
-    fun getAllTickers(): Flux<TickerEntity> {
-        return tickerService.getAllTickers()
+    fun getAllTickers(paginationBoundary:PaginationBoundary): Flux<TickerBoundary> {
+        return tickerService.getAllTickers(paginationBoundary.size, paginationBoundary.page)
     }
 
     // java -jar rsc-0.9.1.jar --debug --channel --data "{\"tickerId\":\"1a2bc3d4e5f6\"}" --route getTickersByIds-channel tcp://localhost:7000

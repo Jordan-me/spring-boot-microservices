@@ -1,6 +1,8 @@
 package com.example.rsockettickermanagementservice
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -12,47 +14,67 @@ class TickerServiceMongo(
     @Autowired val converter: TickerConverter
 ): TickerService {
 
+    fun getExistingIds( ids: MutableList<String>?):Flux<String>{
+        val tickerIds = ids ?: emptyList()
+        return Flux.fromIterable(tickerIds)
+            .map { it!! }
+            .flatMap { this.crud.findById(it) }
+            .map { this.converter.toBoundary(it).tickerId!! }
+            .log()
+    }
     override fun create(ticker: TickerBoundary): Mono<TickerBoundary> {
         ticker.tickerId = null
         ticker.publishedTimestamp = Date()
-//TODO: pass on relatedTickerIds if this id not exist ignore and not save it
-
-//        return Mono.just(ticker.relatedTickerIds)
-//            .flatMapMany { Flux.fromIterable(it) } // convert the list of ids to a Flux
-//            .flatMap { crud.findById(it) } // fetch the ticker by id
-//            .map { it.tickerId } // extract the id of the ticker
-//            .collectList() // collect the ids in a list
-//            .flatMap { crud.save(ticker.copy(relatedTickerIds = it)) } // save the ticker with the filtered list of ids
-//            .then()
-//
+        val tickerIds = ticker.relatedTickerIds ?: mutableListOf<String>()
+        ticker.relatedTickerIds = mutableListOf<String>()
+//        Filter only existing related Ids
         return Mono.just(ticker)
-            .log()
-            .map { this.converter.toEntity(it) }
-            .flatMap { this.crud.save(it) }
+            .zipWith(
+                getExistingIds(tickerIds).collectList()
+            ).map{tuple->
+                tuple.t1.relatedTickerIds = tuple.t2
+            }
+            .then(
+//                Save the object on DB
+                Mono.just(ticker)
+                .log()
+                .map {boundary->
+                    this.converter.toEntity(boundary)
+                }
+                .flatMap { this.crud.save(it) }
+                .map { this.converter.toBoundary(it) }
+                .log()
+            )
+    }
+
+    override fun bindTickers(tickerId: String, relatedTickerIds: List<String>) : Mono<Void>{
+        val ticker = this.crud.findById(tickerId)
+        return this.crud
+            .findAllById(relatedTickerIds)
+            .map {relatedId->
+                ticker
+                    .zipWith(Mono.just(relatedId))
+                    .flatMap {
+                        it.t1.relatedTickerIds?.add(it.t2.tickerId!!)
+                        this.crud
+                            .save(it.t1)
+                    }
+            }.then()
+    }
+
+    override fun getAllTickers(size: Int, page: Int): Flux<TickerBoundary> {
+        return this.crud
+            .findAllByTickerIdNotNull(PageRequest.of(page, size, Sort.Direction.DESC, "summary", "tickerId"))
             .map { this.converter.toBoundary(it) }
             .log()
-    }
 
-    override fun bindTickers(tickerId: String?, relatedTickerIds: List<String>?) {
-        // Find the ticker with the given tickerId
-        val ticker = tickerId?.let { crud.findById(it) }?.block()
-        val relatedTickerIdsList = crud.findAll()
-            .filter { tickerEntity -> relatedTickerIds!!.contains(tickerEntity.tickerId!!) }
-            .map { it.tickerId }
-            .collectList()
-            .block()
-        val nonNullList: List<String> = relatedTickerIdsList.let { it.orEmpty().filterNotNull().map { it } }
-        // Update the ticker to have the related tickers
-        ticker!!.relatedTickerIds?.addAll(nonNullList)
-        crud.save(ticker)
-    }
-
-    override fun getAllTickers(): Flux<TickerEntity> {
-        return crud.findAll().switchIfEmpty(Mono.empty())
     }
 
     override fun getTickerById(id: String) : Mono<TickerBoundary> {
-        return Mono.just(converter.toBoundary(crud.findById(id).block()!!))
+        return this.crud
+            .findById(this.converter.convertIdToEntity(id))
+            .map { this.converter.toBoundary(it) }
+            .log()
     }
 
     override fun deleteAllTickers(): Mono<Void> {

@@ -6,8 +6,7 @@ import java.util.*
 
 @Document(collection = "TICKERS")
 class TickerEntity() {
-    @Id
-    var tickerId: String? = null
+    @Id var tickerId: String? = null
     var publisher: Publisher? = null
     var publishedTimestamp: Date? = null
     var tickerType: String? = null
