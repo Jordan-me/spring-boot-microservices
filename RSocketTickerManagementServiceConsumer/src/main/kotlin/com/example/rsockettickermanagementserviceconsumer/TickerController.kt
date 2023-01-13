@@ -87,7 +87,7 @@ class TickerController(
     }
 
     @RequestMapping(
-        path = ["/ticker"],
+        path = ["/tickers"],
         method = [RequestMethod.GET],
         produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getAll(@RequestParam(name="size", required = false, defaultValue = "10") size:Int,
@@ -97,7 +97,7 @@ class TickerController(
     }
 
     @RequestMapping(
-        path = ["/message/byIds/{ids}"],
+        path = ["/tickers/byIds/{ids}"],
         method = [RequestMethod.GET],
         produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun getByIds (@PathVariable("ids") ids:String):Flux<TickerBoundary>{
