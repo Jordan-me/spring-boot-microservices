@@ -57,38 +57,22 @@ class TickerServiceMongo(
     }
 
     override fun bindTickers(tickerId: String, relatedTickerIds:  MutableList<String>?) : Mono<Void>{
-//        return  getExistingIds(relatedTickerIds)
-//            .map { id->
-//                this.crud.findById(id)
-//                    .zipWith(
-//                        this.crud.findById(tickerId)
-//                    ).map {tuple->
-//                        if (!tuple.t1.relatedTickerIds!!.contains(tuple.t2.tickerId!!)){
-//                            tuple.t1.relatedTickerIds!!.add(tuple.t2.tickerId!!)
-//                            this.crud.save(tuple.t1)
-//                        }
-//                        if (!tuple.t2.relatedTickerIds!!.contains(tuple.t1.tickerId!!)){
-//                            tuple.t2.relatedTickerIds!!.add(tuple.t1.tickerId!!)
-//                            this.crud.save(tuple.t2)
-//                        }
-//                    }
-//            }
-//            .then()
-
         return this.crud
             .findById(tickerId)
             .zipWith(
                 getExistingIds(relatedTickerIds).collectList()
             ).flatMap {tuple->
-                tuple.t1.relatedTickerIds?.addAll(tuple.t2)
+                tuple.t1.relatedTickerIds = (tuple.t1.relatedTickerIds?.plus(tuple.t2))?.distinct() as MutableList<String>?
                 this.crud
                     .save(tuple.t1)
             }.thenMany(
                 getTickers(relatedTickerIds)
-                .map {relatedBoundary->
+                .flatMap {relatedBoundary->
                     Mono.just(this.converter.toEntity(relatedBoundary))
                         .flatMap {
-                            it.relatedTickerIds?.add(tickerId)
+                            if (! it.relatedTickerIds!!.contains(tickerId)){
+                                it.relatedTickerIds?.add(tickerId)
+                            }
                             this.crud
                                 .save(it)
                         }
