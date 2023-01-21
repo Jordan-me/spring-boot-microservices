@@ -12,17 +12,19 @@ class ScheduleShipsController(
     @Autowired val rsocketSchedule: RemoteScheduleShipsService
 ){
 
+    // TODO: Idan Sorany 
     @RequestMapping(
         path = ["/dock"],
         method = [RequestMethod.POST],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun createTicker(@RequestBody docker: DockerBoundary): Mono<DockerBoundary> {
+    fun createDock(@RequestBody docker: DockerBoundary): Mono<DockerBoundary> {
         return this.rsocketSchedule
             .createDocker(docker)
     }
 
+    // TODO: Idan Sorany 
     @RequestMapping(
         path = ["/dock"],
         method = [RequestMethod.GET],
@@ -43,6 +45,7 @@ class ScheduleShipsController(
             )
     }
 
+    // TODO: Tor Hanan 
     @RequestMapping(
         path = ["/visit"],
         method = [RequestMethod.POST],
@@ -54,6 +57,7 @@ class ScheduleShipsController(
             .createVisit(visit)
     }
 
+    // TODO: Tor Hanan 
     @RequestMapping(
         path = ["/visit/{visitId}"],
         method = [RequestMethod.GET],
@@ -64,6 +68,7 @@ class ScheduleShipsController(
             .getSpecificVisit(visitId)
     }
 
+    // TODO: Yarden Dahan  
     @RequestMapping(path=["/visit/{visitId}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE]
@@ -73,6 +78,7 @@ class ScheduleShipsController(
             .update(visit)
     }
 
+    // TODO: Yarden Dahan 
     @RequestMapping(
         path = ["/visit"],
         method = [RequestMethod.GET],
