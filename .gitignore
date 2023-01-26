@@ -9,4 +9,3 @@
 /.gradle/
 .idea/
 .idea/*
-!/.idea/misc.xml
