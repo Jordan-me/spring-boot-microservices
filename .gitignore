@@ -7,3 +7,6 @@
 /serviceusers/build/
 /build/
 /.gradle/
+.idea/
+.idea/*
+!/.idea/misc.xml
