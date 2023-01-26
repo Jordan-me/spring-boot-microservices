@@ -23,8 +23,6 @@ class ScheduleShipsControllerRSocket(
             this.schduleService.getSortAttribute(paginationData.sortAttribute!!),
             "visitId"
             )
-//            paginationData.sortAttribute
-//            Sort.by(paginationData.sortOrder, paginationData.sortAttribute))
         return this.schduleService
             .getVisits(paginationData.filterType!!, paginationData.filterValue!!,pageable)
     }
