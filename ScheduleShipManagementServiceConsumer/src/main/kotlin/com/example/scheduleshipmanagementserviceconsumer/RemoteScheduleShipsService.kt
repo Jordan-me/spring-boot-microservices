@@ -18,6 +18,8 @@ interface RemoteScheduleShipsService {
     fun search(
         filterType: String,
         filterValue: String,
+        from: String,
+        to: String,
         sortAttribute: String,
         sortOrder: String,
         size: Int,

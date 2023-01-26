@@ -10,7 +10,7 @@ class VisitEntity {
     var visitId: String? = null
     var shipId: String? = null
     var shipName: String? = null
-    var docker: String? = null
+    var dock: String? = null
     var timeIn: Date? = null
     var timeOut: Date? = null
     var shipType: String? = null

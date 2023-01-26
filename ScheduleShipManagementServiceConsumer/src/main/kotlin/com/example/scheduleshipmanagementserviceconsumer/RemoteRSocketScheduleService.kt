@@ -67,12 +67,16 @@ class RemoteRSocketScheduleService (
     override fun search(
         filterType: String,
         filterValue: String,
+        from: String,
+        to: String,
         sortAttribute: String,
         sortOrder: String,
         size: Int,
         page: Int
     ): Flux<VisitBoundary> {
         val paginationData = PaginationBoundary(filterType, filterValue, sortAttribute,sortOrder, size, page)
+        if(filterType == "byTimeRange")
+            paginationData.filterValue = "$from,$to"
         return this.rsocketRequester
             .route("get-visits-req-resp")
             .data(paginationData)

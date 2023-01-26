@@ -1,7 +1,6 @@
 package com.example.scheduleshipmanagementservice
 
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class ScheduleShipsConverter {
@@ -13,7 +12,7 @@ class ScheduleShipsConverter {
         }
         entity.shipId = boundary.shipId
         entity.shipName = boundary.shipName
-        entity.docker = boundary.docker
+        entity.dock = boundary.dock
         entity.timeIn = boundary.timeIn
         entity.timeOut = boundary.timeOut
         entity.shipType = boundary.shipType
@@ -31,7 +30,7 @@ class ScheduleShipsConverter {
         boundary.visitId = entity.visitId
         boundary.shipId = entity.shipId
         boundary.shipName = entity.shipName
-        boundary.docker = entity.docker
+        boundary.dock = entity.dock
 //        entity.indexQueue = boundary.indexQueue
         boundary.timeIn = entity.timeIn
         boundary.timeOut = entity.timeOut
@@ -46,24 +45,24 @@ class ScheduleShipsConverter {
 
     }
 
-    fun toEntity (boundary: DockerBoundary): DockerEntity {
-        var entity = DockerEntity()
+    fun toEntity (boundary: DockBoundary): DockEntity {
+        var entity = DockEntity()
 
-        if (boundary.dockerId != null) {
-            entity.dockerId = boundary.dockerId!!
+        if (boundary.dockId != null) {
+            entity.dockId = boundary.dockId!!
         }
-        entity.dockerType = boundary.dockerType
+        entity.dockType = boundary.dockType
         entity.takenBy = boundary.takenBy
         entity.size = boundary.size
 
         return entity
     }
 
-    fun toBoundary(entity: DockerEntity) : DockerBoundary {
-        var boundary = DockerBoundary()
+    fun toBoundary(entity: DockEntity) : DockBoundary {
+        var boundary = DockBoundary()
 
-        boundary.dockerId = entity.dockerId
-        boundary.dockerType = entity.dockerType
+        boundary.dockId = entity.dockId
+        boundary.dockType = entity.dockType
         boundary.takenBy = entity.takenBy
         boundary.size = entity.size
         return boundary

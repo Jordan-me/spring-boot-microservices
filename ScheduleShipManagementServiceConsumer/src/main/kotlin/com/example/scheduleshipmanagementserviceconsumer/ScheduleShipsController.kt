@@ -68,7 +68,6 @@ class ScheduleShipsController(
             .getSpecificVisit(visitId)
     }
 
-    // TODO: Yarden Dahan  
     @RequestMapping(path=["/visit/{visitId}"],
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE]
@@ -87,6 +86,8 @@ class ScheduleShipsController(
     fun searchUserByAttribute(
         @RequestParam(name = "filterType", required = false, defaultValue = "") filterType:String,
         @RequestParam(name = "filterValue", required = false, defaultValue = "") filterValue:String,
+        @RequestParam(name = "from", required = false, defaultValue = "") from: String,
+        @RequestParam(name = "to", required = false, defaultValue = "") to: String,
         @RequestParam(name = "sortBy", required = false, defaultValue = "visitId") sortAttribute:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
@@ -96,6 +97,8 @@ class ScheduleShipsController(
             .search(
                 filterType,
                 filterValue,
+                from,
+                to,
                 sortAttribute,
                 sortOrder,
                 size,
