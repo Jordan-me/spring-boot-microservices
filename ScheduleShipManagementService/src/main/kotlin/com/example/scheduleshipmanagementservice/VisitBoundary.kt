@@ -18,7 +18,7 @@ class VisitBoundary() {
     var load: LoadBoundary? = null
 
     override fun toString(): String {
-        return "VisitBoundary(visitId=$visitId, shipId=$shipId, shipName=$shipName, docker=$dock, indexQueue=$indexQueue, timeIn=$timeIn, timeOut=$timeOut, shipType=$shipType, shipStatus=$shipStatus, shipSize=$shipSize, weightTons=$weightTons, load=$load)"
+        return "VisitBoundary(visitId=$visitId, shipId=$shipId, shipName=$shipName, dock=$dock, indexQueue=$indexQueue, timeIn=$timeIn, timeOut=$timeOut, shipType=$shipType, shipStatus=$shipStatus, shipSize=$shipSize, weightTons=$weightTons, load=$load)"
     }
 
 

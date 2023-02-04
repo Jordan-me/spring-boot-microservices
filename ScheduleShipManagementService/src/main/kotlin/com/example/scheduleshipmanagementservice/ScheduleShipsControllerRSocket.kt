@@ -17,13 +17,26 @@ class ScheduleShipsControllerRSocket(
         return this.schduleService.create(dock)
     }
 
+    @MessageMapping("get-docks-req-resp")
+    fun getDocks(paginationData: PaginationBoundary): Flux<DockBoundary> {
+        val pageable = PageRequest.of(
+            paginationData.page,
+            paginationData.size,
+            this.schduleService.getSortOrder(paginationData.sortOrder!!),
+            this.schduleService.getSortBy(paginationData.sortBy!!),
+            "dockId"
+            )
+        return this.schduleService
+            .getDocks(paginationData.filterType!!, paginationData.filterValue!!,pageable)
+    }
+
     @MessageMapping("get-visits-req-resp")
     fun getVisits(paginationData: PaginationBoundary): Flux<VisitBoundary> {
         val pageable = PageRequest.of(
             paginationData.page,
             paginationData.size,
             this.schduleService.getSortOrder(paginationData.sortOrder!!),
-            this.schduleService.getSortAttribute(paginationData.sortAttribute!!),
+            this.schduleService.getSortBy(paginationData.sortBy!!),
             "visitId"
             )
         return this.schduleService
@@ -34,9 +47,9 @@ class ScheduleShipsControllerRSocket(
         return this.schduleService
             .update(visit)
     }
-    @MessageMapping("deleteAllDockers-fire-and-forget")
-    fun deleteDockers(): Mono<Void> {
-        return schduleService.deleteDockers()
+    @MessageMapping("deleteAllDocks-fire-and-forget")
+    fun deleteDocks(): Mono<Void> {
+        return schduleService.deleteDocks()
     }
     @MessageMapping("deleteAllVisits-fire-and-forget")
     fun deleteVisits(): Mono<Void> {

@@ -13,7 +13,7 @@ import java.util.*
 
 @Service
 class ScheduleServiceMongo (
-    @Autowired    val dockerCrud: DockCrud,
+    @Autowired    val dockCrud: DockCrud,
     @Autowired    val visitCrud: VisitCrud,
     @Autowired    val converter: ScheduleShipsConverter
 ): ScheduleService {
@@ -22,8 +22,14 @@ class ScheduleServiceMongo (
         return this.visitCrud.deleteAll()
     }
 
-    override fun deleteDockers(): Mono<Void> {
-        return this.dockerCrud.deleteAll()
+    override fun deleteDocks(): Mono<Void> {
+        return this.dockCrud.deleteAll()
+    }
+
+    override fun getDocks(filterType: String, filterValue: String, pageable: PageRequest): Flux<DockBoundary> {
+        return this.dockCrud.findAll(pageable.sort)
+            .map {this.converter.toBoundary(it) }
+            .log()
     }
 
     /**
@@ -42,10 +48,10 @@ class ScheduleServiceMongo (
 //                    the ship is left the port
                     visitEntity.timeOut = Date()
                     visitEntity.shipStatus = "LEFT"
-                    dockerCrud.findById(visitEntity.dock!!)
+                    dockCrud.findById(visitEntity.dock!!)
                         .flatMap { dockEntity ->
                             dockEntity.takenBy = null
-                            dockerCrud.save(dockEntity)
+                            dockCrud.save(dockEntity)
                         }
                         .then(
                             visitCrud.save(visitEntity)
@@ -54,10 +60,10 @@ class ScheduleServiceMongo (
 
                 } else if (visit.shipStatus == "UNKNOWN" &&  visitEntity.shipStatus != "UNKNOWN") {
                     visitEntity.shipStatus = "UNKNOWN"
-                    dockerCrud.findById(visitEntity.dock!!)
+                    dockCrud.findById(visitEntity.dock!!)
                         .flatMap { dockEntity ->
                             dockEntity.takenBy = null
-                            dockerCrud.save(dockEntity)
+                            dockCrud.save(dockEntity)
                         }
                         .then(
                             visitCrud.save(visitEntity)
@@ -72,7 +78,7 @@ class ScheduleServiceMongo (
                         visitEntity.dock = dockEntity.dockId
                         visitEntity.shipStatus = "ON_DOCK"
                         dockEntity.takenBy = visitEntity.shipId
-                        dockerCrud.save(dockEntity)
+                        dockCrud.save(dockEntity)
                             .then(visitCrud.save(visitEntity))
                     }
                 }
@@ -99,7 +105,7 @@ class ScheduleServiceMongo (
      * @param filterType a String value, can be a String
      *                  ["byDock", "byType", "ByShipName", "byTimeRange", "byShipId"]
      * @return Flux of VisitBoundary that filtered and sorted as requested.
-     * @see getSortAttribute(Function)
+     * @see getSortBy(Function)
      */
     override fun getVisits(filterType: String, filterValue: String, pageable: PageRequest): Flux<VisitBoundary> {
         return when(filterType) {
@@ -152,11 +158,11 @@ class ScheduleServiceMongo (
      *
      */
     fun getAvailableDock(dockId: String, shipSize: Size): Mono<DockEntity> {
-        return this.dockerCrud.findByDockIdAndTakenByIsNull(dockId)
+        return this.dockCrud.findByDockIdAndTakenByIsNull(dockId)
             .filter { dock ->
                 dock.size!!.width!! >= shipSize.width!! && dock.size!!.length!! >= shipSize.length!!
             }
-            .switchIfEmpty(this.dockerCrud.findByTakenByIsNull()
+            .switchIfEmpty(this.dockCrud.findByTakenByIsNull()
             .filter { dock ->
                 dock.size!!.width!! >= shipSize.width!! && dock.size!!.length!! >= shipSize.length!!
             }
@@ -185,14 +191,14 @@ class ScheduleServiceMongo (
 
     /**
      * retrieve sortAttribute that we support  on sorting
-     * @param sortAttribute a String value, can be ["byShipSizeLength",
+     * @param sortBy a String value, can be ["byShipSizeLength",
      * "byShipSizeWidth, "byTimeIn, "byShipStatus, "byDock, "byShipName], default value ("visitId")
      * @return valid sort attribute
 
 
      */
-    override fun getSortAttribute(sortAttribute: String): String {
-        return when (sortAttribute) {
+    override fun getSortBy(sortBy: String): String {
+        return when (sortBy) {
             "byShipSizeLength" -> "shipSize.length"
             "byShipSizeWidth" -> "shipSize.width"
             "byTimeIn" -> "timeIn"
@@ -211,7 +217,7 @@ class ScheduleServiceMongo (
         return Mono.just(dock)
             .log()
             .map { boundary -> this.converter.toEntity(boundary) }
-            .flatMap { this.dockerCrud.save(it) }
+            .flatMap { this.dockCrud.save(it) }
             .map { this.converter.toBoundary(it) }
             .log()
     }

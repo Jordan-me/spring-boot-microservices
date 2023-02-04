@@ -5,6 +5,6 @@ class PaginationBoundary {
     var size:Int = 20
     var filterType:String? = null
     var filterValue:String? = null
-    var sortAttribute:String? = null
+    var sortBy:String? = null
     var sortOrder:String? = "ASC"
 }

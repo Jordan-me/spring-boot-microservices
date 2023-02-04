@@ -7,16 +7,19 @@ import reactor.core.publisher.Mono
 
 interface ScheduleService {
 
+    fun getSortOrder(sortOrder: String): Sort.Direction
+    fun getSortBy(sortBy: String): String
+
     // Visit
     fun deleteVisits(): Mono<Void>
     fun update(visit: VisitBoundary): Mono<Void>
     fun getVisits(filterType: String, filterValue: String, pageable: PageRequest): Flux<VisitBoundary>
-    fun getSortOrder(sortOrder: String): Sort.Direction
-    fun getSortAttribute(sortAttribute: String): String
+
 
     // Dock
     fun create(dock: DockBoundary): Mono<DockBoundary>
-    fun deleteDockers(): Mono<Void>
+    fun deleteDocks(): Mono<Void>
+    fun getDocks(filterType: String, filterValue: String, pageable: PageRequest): Flux<DockBoundary>
 
 
 }

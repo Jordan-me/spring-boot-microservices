@@ -30,10 +30,10 @@ class RemoteRSocketScheduleService (
             .log()
     }
 
-    override fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary> {
-        val paginationData = PaginationBoundary(sortAttribute,sortOrder, size, page)
+    override fun getAllDocks(sortBy: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary> {
+        val paginationData = PaginationBoundary(sortBy,sortOrder, size, page)
         return this.rsocketRequester
-            .route("getAllDockers-stream")
+            .route("getAllDocks-stream")
             .data(paginationData)
             .retrieveFlux(DockBoundary::class.java)
             .log()
@@ -68,12 +68,12 @@ class RemoteRSocketScheduleService (
         filterValue: String,
         from: String,
         to: String,
-        sortAttribute: String,
+        sortBy: String,
         sortOrder: String,
         size: Int,
         page: Int
     ): Flux<VisitBoundary> {
-        val paginationData = PaginationBoundary(filterType, filterValue, sortAttribute,sortOrder, size, page)
+        val paginationData = PaginationBoundary(filterType, filterValue, sortBy,sortOrder, size, page)
         if(filterType == "byTimeRange")
             paginationData.filterValue = "$from,$to"
         return this.rsocketRequester
@@ -85,7 +85,7 @@ class RemoteRSocketScheduleService (
 
     override fun deleteDocks(): Mono<Void> {
         return this.rsocketRequester
-            .route("deleteAllDockers-fire-and-forget")
+            .route("deleteAllDocks-fire-and-forget")
             .send()
             .log()
     }

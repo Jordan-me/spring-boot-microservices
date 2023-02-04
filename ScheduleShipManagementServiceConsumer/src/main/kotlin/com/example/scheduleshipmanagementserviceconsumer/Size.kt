@@ -1,8 +1,8 @@
 package com.example.scheduleshipmanagementserviceconsumer
 
 class Size() {
-    var width: Int? = null
-    var length: Int? = null
+    var width: Float? = null
+    var length: Float? = null
 
     override fun toString(): String {
         return "SizeBoundary(width=$width, length=$length)"

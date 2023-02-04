@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono
 interface RemoteScheduleShipsService {
     fun createDock(dock: DockBoundary): Mono<DockBoundary>
 
-    fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary>
+    fun getAllDocks(sortBy: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary>
 
     fun createVisit(visit: VisitBoundary): Mono<VisitBoundary>
 
@@ -19,7 +19,7 @@ interface RemoteScheduleShipsService {
         filterValue: String,
         from: String,
         to: String,
-        sortAttribute: String,
+        sortBy: String,
         sortOrder: String,
         size: Int,
         page: Int
