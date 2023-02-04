@@ -4,7 +4,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
 import java.util.*
 
 interface VisitCrud : ReactiveMongoRepository<VisitEntity, String>
@@ -17,6 +16,6 @@ interface VisitCrud : ReactiveMongoRepository<VisitEntity, String>
     fun findAllByShipType(shipType: String, pageable: PageRequest): Flux<VisitEntity>
     fun findAllByShipName(shipName: String, pageable: PageRequest): Flux<VisitEntity>
     fun findAllByShipId(shipId: String,pageable: PageRequest): Flux<VisitEntity>
-    fun findAll(pageable:PageRequest): Flux<VisitEntity>
+//    fun findAll(pageable:PageRequest): Flux<VisitEntity>
 
 }

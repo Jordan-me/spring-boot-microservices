@@ -1,4 +1,4 @@
-package com.example.scheduleshipmanagementservice
+package com.example.scheduleshipmanagementserviceconsumer
 
 class Size() {
     var width: Int? = null

@@ -1,6 +1,5 @@
-package com.example.scheduleshipmanagementservice
+package com.example.scheduleshipmanagementserviceconsumer
 
-import com.example.scheduleshipmanagementserviceconsumer.LoadBoundary
 import java.util.Date
 
 class VisitBoundary() {

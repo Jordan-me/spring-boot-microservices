@@ -1,6 +1,5 @@
 package com.example.scheduleshipmanagementserviceconsumer
 
-import com.example.scheduleshipmanagementservice.VisitBoundary
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -19,9 +18,9 @@ class ScheduleShipsController(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun createDock(@RequestBody docker: DockerBoundary): Mono<DockerBoundary> {
+    fun createDock(@RequestBody dock: DockBoundary): Mono<DockBoundary> {
         return this.rsocketSchedule
-            .createDocker(docker)
+            .createDock(dock)
     }
 
     // TODO: Idan Sorany 
@@ -31,11 +30,11 @@ class ScheduleShipsController(
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun getAllDocks(
-        @RequestParam(name = "sortBy", required = false, defaultValue = "dockerId") sortAttribute:String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "dockId") sortAttribute:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size:Int
-    ): Flux<DockerBoundary> {
+    ): Flux<DockBoundary> {
         return this.rsocketSchedule
             .getAllDocks(
                 sortAttribute,
@@ -108,11 +107,11 @@ class ScheduleShipsController(
     }
 
     @RequestMapping(
-        path = ["/docker"],
+        path = ["/dock"],
         method = [RequestMethod.DELETE])
-    fun deleteDockers():Mono<Void>{
+    fun deleteDocks():Mono<Void>{
         return this.rsocketSchedule
-            .deleteDockers()
+            .deleteDocks()
     }
 
     @RequestMapping(

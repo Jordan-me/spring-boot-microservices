@@ -51,7 +51,7 @@ class ScheduleShipsConverter {
         if (boundary.dockId != null) {
             entity.dockId = boundary.dockId!!
         }
-        entity.dockType = boundary.dockType
+        entity.type = boundary.dockType
         entity.takenBy = boundary.takenBy
         entity.size = boundary.size
 
@@ -62,7 +62,7 @@ class ScheduleShipsConverter {
         var boundary = DockBoundary()
 
         boundary.dockId = entity.dockId
-        boundary.dockType = entity.dockType
+        boundary.dockType = entity.type
         boundary.takenBy = entity.takenBy
         boundary.size = entity.size
         return boundary

@@ -116,7 +116,7 @@ class ScheduleServiceMongo (
             }
             "byShipId" -> visitCrud.findAllByShipId(filterValue, pageable)
 
-            else -> visitCrud.findAll(pageable)
+            else -> visitCrud.findAll(pageable.sort)
         }.map { visit ->
             if(visit.shipStatus != "WAITING"){
 //                There is no need to assign the index on our queue
@@ -204,4 +204,16 @@ class ScheduleServiceMongo (
         }
     }
 
+    override fun create(dock: DockBoundary): Mono<DockBoundary> {
+        dock.dockId = null
+        dock.takenBy = null
+
+        return Mono.just(dock)
+            .log()
+            .map { boundary -> this.converter.toEntity(boundary) }
+            .flatMap { this.dockerCrud.save(it) }
+            .map { this.converter.toBoundary(it) }
+            .log()
+    }
 }
+

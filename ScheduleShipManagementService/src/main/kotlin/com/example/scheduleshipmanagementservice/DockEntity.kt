@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 class DockEntity() {
     @Id
     var dockId: String? = null
-    var dockType: String? = null
+    var type: String? = null
     var takenBy: String? = null
     var size: Size? = null
 }

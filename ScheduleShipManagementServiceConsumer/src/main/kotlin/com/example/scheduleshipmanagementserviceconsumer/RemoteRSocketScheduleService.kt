@@ -1,6 +1,5 @@
 package com.example.scheduleshipmanagementserviceconsumer
 
-import com.example.scheduleshipmanagementservice.VisitBoundary
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.messaging.rsocket.RSocketRequester
@@ -23,20 +22,20 @@ class RemoteRSocketScheduleService (
             .tcp(this.remoteHost, this.remotePort)
     }
 
-    override fun createDocker(docker: DockerBoundary): Mono<DockerBoundary> {
+    override fun createDock(dock: DockBoundary): Mono<DockBoundary> {
         return this.rsocketRequester
-            .route("publish-docker-req-resp")
-            .data(docker)
-            .retrieveMono(DockerBoundary::class.java)
+            .route("publish-dock-req-resp")
+            .data(dock)
+            .retrieveMono(DockBoundary::class.java)
             .log()
     }
 
-    override fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockerBoundary> {
+    override fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary> {
         val paginationData = PaginationBoundary(sortAttribute,sortOrder, size, page)
         return this.rsocketRequester
             .route("getAllDockers-stream")
             .data(paginationData)
-            .retrieveFlux(DockerBoundary::class.java)
+            .retrieveFlux(DockBoundary::class.java)
             .log()
     }
 
@@ -84,7 +83,7 @@ class RemoteRSocketScheduleService (
             .log()
     }
 
-    override fun deleteDockers(): Mono<Void> {
+    override fun deleteDocks(): Mono<Void> {
         return this.rsocketRequester
             .route("deleteAllDockers-fire-and-forget")
             .send()

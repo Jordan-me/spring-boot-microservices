@@ -1,13 +1,12 @@
 package com.example.scheduleshipmanagementserviceconsumer
 
-import com.example.scheduleshipmanagementservice.VisitBoundary
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface RemoteScheduleShipsService {
-    fun createDocker(docker: DockerBoundary): Mono<DockerBoundary>
+    fun createDock(dock: DockBoundary): Mono<DockBoundary>
 
-    fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockerBoundary>
+    fun getAllDocks(sortAttribute: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary>
 
     fun createVisit(visit: VisitBoundary): Mono<VisitBoundary>
 
@@ -26,7 +25,7 @@ interface RemoteScheduleShipsService {
         page: Int
     ): Flux<VisitBoundary>
 
-    fun deleteDockers(): Mono<Void>
+    fun deleteDocks(): Mono<Void>
 
     fun deleteVisits(): Mono<Void>
 

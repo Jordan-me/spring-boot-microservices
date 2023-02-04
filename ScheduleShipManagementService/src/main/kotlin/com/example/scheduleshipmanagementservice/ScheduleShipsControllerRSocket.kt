@@ -2,7 +2,6 @@ package com.example.scheduleshipmanagementservice
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 import reactor.core.publisher.Flux
@@ -13,6 +12,10 @@ class ScheduleShipsControllerRSocket(
     @Autowired val schduleService: ScheduleService
     ){
 
+    @MessageMapping("publish-dock-ticker-req-resp")
+    fun create (dock:DockBoundary): Mono<DockBoundary> {
+        return this.schduleService.create(dock)
+    }
 
     @MessageMapping("get-visits-req-resp")
     fun getVisits(paginationData: PaginationBoundary): Flux<VisitBoundary> {
