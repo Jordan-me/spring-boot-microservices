@@ -5,20 +5,20 @@ class PaginationBoundary() {
     var size:Int = 20
     var filterType:String? = null
     var filterValue:String? = null
-    var sortAttribute:String? = null
+    var sortBy:String? = null
     var sortOrder:String? = "ASC"
 
-    constructor(filterType:String, filterValue:String,sortAttribute:String,sortOrder:String,size:Int, page:Int):this(){
+    constructor(filterType:String, filterValue:String,sortBy:String,sortOrder:String,size:Int, page:Int):this(){
         this.filterType = filterType
         this.filterValue = filterValue
-        this.sortAttribute = sortAttribute
+        this.sortBy = sortBy
         this.sortOrder = sortOrder
         this.size = size
         this.page = page
     }
 
-    constructor(sortAttribute:String,sortOrder:String,size:Int, page:Int):this(){
-        this.sortAttribute = sortAttribute
+    constructor(sortBy:String,sortOrder:String,size:Int, page:Int):this(){
+        this.sortBy = sortBy
         this.sortOrder = sortOrder
         this.size = size
         this.page = page
