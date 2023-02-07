@@ -12,12 +12,12 @@ class ScheduleShipsControllerRSocket(
     @Autowired val schduleService: ScheduleService
     ){
 
-    @MessageMapping("publish-dock-ticker-req-resp")
+    @MessageMapping("publish-dock-req-resp")
     fun create (dock:DockBoundary): Mono<DockBoundary> {
         return this.schduleService.create(dock)
     }
 
-    @MessageMapping("get-docks-req-resp")
+    @MessageMapping("getAllDocks-stream")
     fun getDocks(paginationData: PaginationBoundary): Flux<DockBoundary> {
         val pageable = PageRequest.of(
             paginationData.page,

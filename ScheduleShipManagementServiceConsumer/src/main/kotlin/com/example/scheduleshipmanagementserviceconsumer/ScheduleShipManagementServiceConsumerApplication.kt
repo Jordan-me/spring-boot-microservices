@@ -1,4 +1,4 @@
-package com.example.scheduleshipmanagementservice
+package com.example.scheduleshipmanagementserviceconsumer
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

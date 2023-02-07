@@ -7,7 +7,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
-class ScheduleShipsController(
+class ScheduleShipController(
     @Autowired val rsocketSchedule: RemoteScheduleShipsService
 ){
 
