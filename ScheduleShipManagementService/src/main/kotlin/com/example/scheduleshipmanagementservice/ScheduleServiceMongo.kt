@@ -174,7 +174,7 @@ class ScheduleServiceMongo (
     }
 
     /**
-     * count all the ships on queue and retrive the index of the relevant ship
+     * count all the ships on queue and retrieve the index of the relevant ship
      *
      * @param timeIn a Date to search all ships that came before it
      * @return Mono of Int that calculate as index of the relevant ship
@@ -242,14 +242,16 @@ class ScheduleServiceMongo (
                 Mono.zip(
                     visitCrud.save(converter.toEntity(visit)),
                     dockCrud.save(dock)
-                ).map { t -> converter.toBoundary(t.t1) }
+                ).map { tuple  -> converter.toBoundary(tuple .t1) }
             }
             .switchIfEmpty(
-                Mono.defer {
-                    visit.indexQueue = 5
-                    visitCrud.save(converter.toEntity(visit))
-                        .map { entity -> converter.toBoundary(entity) }
-                }
+                getNextIndexInQueue(visit.timeIn!!)
+                    .flatMap { nextIndex ->
+                        visit.indexQueue = nextIndex
+                        visitCrud.save(converter.toEntity(visit))
+                            .map { savedVisit -> converter.toBoundary(savedVisit) }
+                    }
             )
-    }
+}
+
 }
