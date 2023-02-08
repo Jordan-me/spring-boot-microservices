@@ -7,8 +7,8 @@ class ScheduleShipsConverter {
     fun toEntity (boundary: VisitBoundary): VisitEntity {
         var entity = VisitEntity()
 
-        if (boundary.visitId != null) {
-            entity.visitId = boundary.visitId!!
+        if (boundary.id != null) {
+            entity.id = boundary.id!!
         }
         entity.shipId = boundary.shipId
         entity.shipName = boundary.shipName
@@ -27,7 +27,7 @@ class ScheduleShipsConverter {
 
     fun toBoundary(entity: VisitEntity) : VisitBoundary {
         var boundary = VisitBoundary()
-        boundary.visitId = entity.visitId
+        boundary.id = entity.id
         boundary.shipId = entity.shipId
         boundary.shipName = entity.shipName
         boundary.dock = entity.dock
@@ -48,8 +48,8 @@ class ScheduleShipsConverter {
     fun toEntity (boundary: DockBoundary): DockEntity {
         var entity = DockEntity()
 
-        if (boundary.dockId != null) {
-            entity.dockId = boundary.dockId!!
+        if (boundary.id != null) {
+            entity.id = boundary.id!!
         }
         entity.type = boundary.type
         entity.takenBy = boundary.takenBy
@@ -61,7 +61,7 @@ class ScheduleShipsConverter {
     fun toBoundary(entity: DockEntity) : DockBoundary {
         var boundary = DockBoundary()
 
-        boundary.dockId = entity.dockId
+        boundary.id = entity.id
         boundary.type = entity.type
         boundary.takenBy = entity.takenBy
         boundary.size = entity.size

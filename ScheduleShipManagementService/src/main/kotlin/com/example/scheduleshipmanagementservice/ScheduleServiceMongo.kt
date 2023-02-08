@@ -26,9 +26,10 @@ class ScheduleServiceMongo (
         return this.dockCrud.deleteAll()
     }
 
-    override fun getDocks(filterType: String, filterValue: String, pageable: PageRequest): Flux<DockBoundary> {
+    override fun getDocks(pageable: PageRequest): Flux<DockBoundary> {
         return this.dockCrud.findAll(pageable.sort)
-            .map {this.converter.toBoundary(it) }
+            .map {Mono.just(this.converter.toBoundary(it)) }
+            .flatMap { it }
             .log()
     }
 
@@ -42,7 +43,7 @@ class ScheduleServiceMongo (
      *
      */
     override fun update(visit: VisitBoundary): Mono<Void> {
-        return visitCrud.findByVisitId(visit.visitId!!)
+        return visitCrud.findById(visit.id!!)
             .flatMap { visitEntity ->
                 if (visit.shipStatus == "LEFT" &&  visitEntity.shipStatus != "LEFT") {
 //                    the ship is left the port
@@ -75,7 +76,7 @@ class ScheduleServiceMongo (
 //                    assign ship on queue
                     getAvailableDock(visit.dock!!,visitEntity.shipSize!!)
                     .flatMap { dockEntity ->
-                        visitEntity.dock = dockEntity.dockId
+                        visitEntity.dock = dockEntity.id
                         visitEntity.shipStatus = "ON_DOCK"
                         dockEntity.takenBy = visitEntity.shipId
                         dockCrud.save(dockEntity)
@@ -87,7 +88,7 @@ class ScheduleServiceMongo (
             .onErrorResume {
                 when (it) {
                     is DockNotAvailableException -> {
-                        visitCrud.findByVisitId(visit.visitId!!)
+                        visitCrud.findById(visit.id!!)
                             .flatMap { visitEntity ->
                                 visitEntity.shipStatus = "WAITING"
                                 visitCrud.save(visitEntity)
@@ -158,7 +159,7 @@ class ScheduleServiceMongo (
      *
      */
     fun getAvailableDock(dockId: String, shipSize: Size): Mono<DockEntity> {
-        return this.dockCrud.findByDockIdAndTakenByIsNull(dockId)
+        return this.dockCrud.findByidAndTakenByIsNull(dockId)
             .filter { dock ->
                 dock.size!!.width!! >= shipSize.width!! && dock.size!!.length!! >= shipSize.length!!
             }
@@ -192,7 +193,7 @@ class ScheduleServiceMongo (
     /**
      * retrieve sortAttribute that we support  on sorting
      * @param sortBy a String value, can be ["byShipSizeLength",
-     * "byShipSizeWidth, "byTimeIn, "byShipStatus, "byDock, "byShipName], default value ("visitId")
+     * "byShipSizeWidth, "byTimeIn, "byShipStatus, "byDock, "byShipName], default value ("id")
      * @return valid sort attribute
 
 
@@ -205,13 +206,17 @@ class ScheduleServiceMongo (
             "byShipStatus" -> "shipStatus"
             "byDock" -> "dock"
             "byShipName" -> "shipName"
+            "byType" -> "type"
+            "byDockSizeLength" -> "size.length"
+            "byDockSizeWidth" -> "size.width"
+            "byTakenBy" -> "takenBy"
  //         "index_queue" -> "shipSize.length"
-            else -> "visitId"
+            else -> "Id"
         }
     }
 
     override fun create(dock: DockBoundary): Mono<DockBoundary> {
-        dock.dockId = null
+        dock.id = null
         dock.takenBy = null
 
         return Mono.just(dock)

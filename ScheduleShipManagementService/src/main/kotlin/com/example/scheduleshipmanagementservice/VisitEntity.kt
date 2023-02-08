@@ -7,7 +7,7 @@ import java.util.*
 @Document(collection = "VISITS")
 class VisitEntity {
     @Id
-    var visitId: String? = null
+    var id: String? = null
     var shipId: String? = null
     var shipName: String? = null
     var dock: String? = null

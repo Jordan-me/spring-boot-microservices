@@ -30,7 +30,7 @@ class ScheduleShipController(
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
     fun getAllDocks(
-        @RequestParam(name = "sortBy", required = false, defaultValue = "dockId") sortBy:String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "id") sortBy:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size:Int
@@ -87,7 +87,7 @@ class ScheduleShipController(
         @RequestParam(name = "filterValue", required = false, defaultValue = "") filterValue:String,
         @RequestParam(name = "from", required = false, defaultValue = "") from: String,
         @RequestParam(name = "to", required = false, defaultValue = "") to: String,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "visitId") sortBy:String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "id") sortBy:String,
         @RequestParam(name = "sortOrder", required = false, defaultValue = "ASC") sortOrder:String,
         @RequestParam(name = "page", required = false, defaultValue = "0") page:Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size:Int

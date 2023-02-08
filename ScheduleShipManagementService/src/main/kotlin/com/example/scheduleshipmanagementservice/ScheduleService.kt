@@ -19,7 +19,7 @@ interface ScheduleService {
     // Dock
     fun create(dock: DockBoundary): Mono<DockBoundary>
     fun deleteDocks(): Mono<Void>
-    fun getDocks(filterType: String, filterValue: String, pageable: PageRequest): Flux<DockBoundary>
+    fun getDocks(pageable: PageRequest): Flux<DockBoundary>
 
 
 }

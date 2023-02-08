@@ -5,6 +5,6 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 interface DockCrud : ReactiveMongoRepository<DockEntity, String>{
-    fun findByDockIdAndTakenByIsNull(dockId:String): Mono<DockEntity>
+    fun findByidAndTakenByIsNull(dockId:String): Mono<DockEntity>
     fun findByTakenByIsNull(): Flux<DockEntity>
 }
