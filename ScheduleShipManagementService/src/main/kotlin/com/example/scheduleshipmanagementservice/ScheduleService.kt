@@ -14,7 +14,8 @@ interface ScheduleService {
     fun deleteVisits(): Mono<Void>
     fun update(visit: VisitBoundary): Mono<Void>
     fun getVisits(filterType: String, filterValue: String, pageable: PageRequest): Flux<VisitBoundary>
-
+    fun getSpecificVisit(id: String): Mono<VisitBoundary>
+    fun createVisit(visit: VisitBoundary): Mono<VisitBoundary>
 
     // Dock
     fun create(dock: DockBoundary): Mono<DockBoundary>

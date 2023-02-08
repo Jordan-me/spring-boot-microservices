@@ -56,4 +56,18 @@ class ScheduleShipsControllerRSocket(
         return schduleService.deleteVisits()
     }
 
+    @MessageMapping("get-visit-req-resp")
+    fun getByIds(ids: Flux<IdBoundary>): Flux<VisitBoundary> {
+        return ids
+            .map { it.id!! }
+            .flatMap { this.schduleService
+                .getSpecificVisit(it)}
+            .log()
+    }
+
+    @MessageMapping("publish-visit-ticker-req-resp")
+    fun create (visit:VisitBoundary): Mono<VisitBoundary> {
+        return this.schduleService.createVisit(visit)
+    }
+
 }

@@ -24,7 +24,9 @@ class ScheduleShipsConverter {
 
         return entity
     }
-
+    fun convertIdToEntity (id:String):String{
+        return id
+    }
     fun toBoundary(entity: VisitEntity) : VisitBoundary {
         var boundary = VisitBoundary()
         boundary.visitId = entity.visitId
