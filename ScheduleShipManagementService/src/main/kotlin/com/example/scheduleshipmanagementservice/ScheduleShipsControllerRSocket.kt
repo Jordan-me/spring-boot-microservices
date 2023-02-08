@@ -64,7 +64,7 @@ class ScheduleShipsControllerRSocket(
             .log()
     }
 
-    @MessageMapping("publish-visit-ticker-req-resp")
+    @MessageMapping("publish-visit-req-resp")
     fun create (visit:VisitBoundary): Mono<VisitBoundary> {
         return this.schduleService.createVisit(visit)
     }

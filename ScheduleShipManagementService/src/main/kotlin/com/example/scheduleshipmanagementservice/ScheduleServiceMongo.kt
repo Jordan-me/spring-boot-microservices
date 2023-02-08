@@ -226,5 +226,34 @@ class ScheduleServiceMongo (
             .map { this.converter.toBoundary(it) }
             .log()
     }
+
+    override fun getSpecificVisit(id: String): Mono<VisitBoundary> {
+        return this.visitCrud
+            .findById(this.converter.convertIdToEntity(id))
+            .map { this.converter.toBoundary(it) }
+            .log()
+    }
+
+
+
+    override fun createVisit(visit: VisitBoundary): Mono<VisitBoundary> {
+        return getAvailableDock(visit.dock!!, visit.shipSize!!)
+            .flatMap { dock ->
+                visit.dock = dock.id
+                dock.takenBy = visit.id
+                Mono.zip(
+                    visitCrud.save(converter.toEntity(visit)),
+                    dockCrud.save(dock)
+                ).map { tuple  -> converter.toBoundary(tuple .t1) }
+            }
+            .switchIfEmpty(
+                getNextIndexInQueue(visit.timeIn!!)
+                    .flatMap { nextIndex ->
+                        visit.indexQueue = nextIndex
+                        visitCrud.save(converter.toEntity(visit))
+                            .map { savedVisit -> converter.toBoundary(savedVisit) }
+                    }
+            )
+    }
 }
 
