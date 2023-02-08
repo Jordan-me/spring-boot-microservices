@@ -8,7 +8,6 @@ import java.util.*
 
 interface VisitCrud : ReactiveMongoRepository<VisitEntity, String>
 {
-    fun findByVisitId(visitId:String): Mono<VisitEntity>
 //    fun findAllByShipStatus(shipStatus:String):Flux<VisitEntity>
     fun countByShipStatusAndTimeInBefore(shipStatus:String,timeIn: Date):Mono<Int>
     fun findAllByDock(dockId: String, pageable: PageRequest): Flux<VisitEntity>

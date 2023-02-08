@@ -3,7 +3,7 @@ package com.example.scheduleshipmanagementservice
 import java.util.Date
 
 class VisitBoundary() {
-    var visitId: String? = null
+    var id: String? = null
     var shipId: String? = null
     var shipName: String? = null
     var dock: String? = null
@@ -18,7 +18,7 @@ class VisitBoundary() {
     var load: LoadBoundary? = null
 
     override fun toString(): String {
-        return "VisitBoundary(visitId=$visitId, shipId=$shipId, shipName=$shipName, dock=$dock, indexQueue=$indexQueue, timeIn=$timeIn, timeOut=$timeOut, shipType=$shipType, shipStatus=$shipStatus, shipSize=$shipSize, weightTons=$weightTons, load=$load)"
+        return "VisitBoundary(visitId=$id, shipId=$shipId, shipName=$shipName, dock=$dock, indexQueue=$indexQueue, timeIn=$timeIn, timeOut=$timeOut, shipType=$shipType, shipStatus=$shipStatus, shipSize=$shipSize, weightTons=$weightTons, load=$load)"
     }
 
 

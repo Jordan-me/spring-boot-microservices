@@ -24,10 +24,9 @@ class ScheduleShipsControllerRSocket(
             paginationData.size,
             this.schduleService.getSortOrder(paginationData.sortOrder!!),
             this.schduleService.getSortBy(paginationData.sortBy!!),
-            "dockId"
             )
         return this.schduleService
-            .getDocks(paginationData.filterType!!, paginationData.filterValue!!,pageable)
+            .getDocks(pageable)
     }
 
     @MessageMapping("get-visits-req-resp")
