@@ -46,7 +46,7 @@ class ScheduleServiceMongo (
         return visitCrud.findById(visit.id!!)
             .flatMap { visitEntity ->
                 if (visit.shipStatus == "LEFT" &&  visitEntity.shipStatus != "LEFT") {
-//                    the ship is left the port
+//                  the ship is left the port
                     visitEntity.timeOut = Date()
                     visitEntity.shipStatus = "LEFT"
                     dockCrud.findById(visitEntity.dock!!)
@@ -138,12 +138,7 @@ class ScheduleServiceMongo (
                     }
             }
         }.flatMap { it }
-//       TODO: check how to sort when indexQueue is given as sort attribute
-//            .sort{t1, t2 ->
-//                when (pageable.sort.toString()) {
-//                    "indexQueue" -> t1.indexQueue!!.compareTo(t2.indexQueue!!)
-//                    else -> t1.visitId!!.compareTo(t2.visitId!!)
-//            }
+
     }
 
     /**
@@ -180,7 +175,8 @@ class ScheduleServiceMongo (
      */
     fun getNextIndexInQueue(timeIn: Date): Mono<Int> {
         return visitCrud.countByShipStatusAndTimeInBefore("WAITING", timeIn)
-            .map { it + 1 }
+            .map { (it + 1).toInt() }
+            .onErrorResume { Mono.just(1) } // Return a default value if an error occurs
     }
 
     override fun getSortOrder(sortOrder: String): Sort.Direction {
@@ -237,23 +233,32 @@ class ScheduleServiceMongo (
 
 
     override fun createVisit(visit: VisitBoundary): Mono<VisitBoundary> {
+        visit.id = null
+        visit.timeOut = null
         return getAvailableDock(visit.dock!!, visit.shipSize!!)
             .flatMap { dock ->
                 visit.dock = dock.id
                 dock.takenBy = visit.id
+                visit.shipStatus = "ON_DOCK"
                 Mono.zip(
                     visitCrud.save(converter.toEntity(visit)),
                     dockCrud.save(dock)
                 ).map { tuple  -> converter.toBoundary(tuple .t1) }
             }
-            .switchIfEmpty(
+            .onErrorResume {
                 getNextIndexInQueue(visit.timeIn!!)
                     .flatMap { nextIndex ->
+                        visit.dock = null
                         visit.indexQueue = nextIndex
+                        visit.shipStatus = "WAITING"
                         visitCrud.save(converter.toEntity(visit))
-                            .map { savedVisit -> converter.toBoundary(savedVisit) }
+                            .map { savedVisit ->
+                                val boundary = converter.toBoundary(savedVisit)
+                                boundary.indexQueue = nextIndex
+                                boundary
+                            }
                     }
-            )
+            }
     }
 }
 
