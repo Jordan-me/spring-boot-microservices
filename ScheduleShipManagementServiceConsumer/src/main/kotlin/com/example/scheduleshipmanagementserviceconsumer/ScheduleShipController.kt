@@ -23,7 +23,6 @@ class ScheduleShipController(
             .createDock(dock)
     }
 
-    // TODO: Idan Sorany 
     @RequestMapping(
         path = ["/dock"],
         method = [RequestMethod.GET],
@@ -44,19 +43,17 @@ class ScheduleShipController(
             )
     }
 
-    // TODO: Tor Hanan 
     @RequestMapping(
         path = ["/visit"],
         method = [RequestMethod.POST],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun createTicker(@RequestBody visit: VisitBoundary): Mono<VisitBoundary> {
+    fun createVisit(@RequestBody visit: VisitBoundary): Mono<VisitBoundary> {
         return this.rsocketSchedule
             .createVisit(visit)
     }
 
-    // TODO: Tor Hanan 
     @RequestMapping(
         path = ["/visit/{visitId}"],
         method = [RequestMethod.GET],
@@ -71,7 +68,11 @@ class ScheduleShipController(
         method = [RequestMethod.PUT],
         consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun updateVisit (@RequestBody visit: VisitBoundary):Mono<Void>{
+    fun updateVisit (@RequestBody visitBindingBoundary: VisitBindingBoundary, @PathVariable visitId: String):Mono<Void>{
+        var visit: VisitBoundary = VisitBoundary()
+        visit.id = visitId
+        visit.dock = visitBindingBoundary.dockId
+        visit.shipStatus = visitBindingBoundary.shipStatus
         return this.rsocketSchedule
             .update(visit)
     }
@@ -80,7 +81,7 @@ class ScheduleShipController(
     @RequestMapping(
         path = ["/visit"],
         method = [RequestMethod.GET],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
+        produces = [MediaType.TEXT_EVENT_STREAM_VALUE]
     )
     fun searchUserByAttribute(
         @RequestParam(name = "filterType", required = false, defaultValue = "") filterType:String,

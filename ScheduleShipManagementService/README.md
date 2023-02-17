@@ -184,7 +184,7 @@ visit:
 
 {
 
-  "visitId":"18a6ba3f9938d",
+  "id":"18a6ba3f9938d",
 
    "shipId": "123456789",
 
@@ -242,7 +242,7 @@ dock:
 
 {
 
-"dockId":  (int) auto-increment, //dock number
+"id":  (int) auto-increment, //dock number
 
 "Type" : (string), // e.g. <"park lot", "docking">
 

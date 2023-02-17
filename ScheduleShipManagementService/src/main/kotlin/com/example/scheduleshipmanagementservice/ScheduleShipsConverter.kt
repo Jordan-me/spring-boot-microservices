@@ -18,7 +18,7 @@ class ScheduleShipsConverter {
         entity.shipType = boundary.shipType
         entity.shipStatus = boundary.shipStatus
 
-        entity.shipSize = boundary.shipSize
+        entity.size = boundary.shipSize
         entity.weightTons = boundary.weightTons
         entity.load = boundary.load
 
@@ -39,7 +39,7 @@ class ScheduleShipsConverter {
         boundary.shipType = entity.shipType
         boundary.shipStatus = entity.shipStatus
 
-        boundary.shipSize = entity.shipSize
+        boundary.shipSize = entity.size
         boundary.weightTons = entity.weightTons
         boundary.load = entity.load
 

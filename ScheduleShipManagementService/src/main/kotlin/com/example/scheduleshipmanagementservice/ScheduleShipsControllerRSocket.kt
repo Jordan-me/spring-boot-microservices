@@ -2,6 +2,7 @@ package com.example.scheduleshipmanagementservice
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
 import reactor.core.publisher.Flux
@@ -9,64 +10,70 @@ import reactor.core.publisher.Mono
 
 @Controller
 class ScheduleShipsControllerRSocket(
-    @Autowired val schduleService: ScheduleService
+    @Autowired val scheduleService: ScheduleService
     ){
 
     @MessageMapping("publish-dock-req-resp")
     fun create (dock:DockBoundary): Mono<DockBoundary> {
-        return this.schduleService.create(dock)
+        return this.scheduleService.createDock(dock)
     }
 
-    @MessageMapping("getAllDocks-stream")
+    @MessageMapping("get-docks-req-stream")
     fun getDocks(paginationData: PaginationBoundary): Flux<DockBoundary> {
         val pageable = PageRequest.of(
             paginationData.page,
             paginationData.size,
-            this.schduleService.getSortOrder(paginationData.sortOrder!!),
-            this.schduleService.getSortBy(paginationData.sortBy!!),
+            this.scheduleService.getSortOrder(paginationData.sortOrder!!),
+            this.scheduleService.getSortBy(paginationData.sortBy!!, true),
             )
-        return this.schduleService
+        return this.scheduleService
             .getDocks(pageable)
     }
 
-    @MessageMapping("get-visits-req-resp")
+    @MessageMapping("get-visits-req-stream")
     fun getVisits(paginationData: PaginationBoundary): Flux<VisitBoundary> {
+        val sortBy = this.scheduleService.getSortBy(paginationData.sortBy!!, false)
+//        val sortOrder = this.scheduleService.getSortOrder(paginationData.sortOrder!!)
+//        val sort = Sort.by(sortOrder, sortBy)
+//        val pageable = PageRequest.of(paginationData.page,paginationData.size, sort)
         val pageable = PageRequest.of(
             paginationData.page,
             paginationData.size,
-            this.schduleService.getSortOrder(paginationData.sortOrder!!),
-            this.schduleService.getSortBy(paginationData.sortBy!!),
-            "visitId"
-            )
-        return this.schduleService
+            this.scheduleService.getSortOrder(paginationData.sortOrder!!),
+            this.scheduleService.getSortBy(paginationData.sortBy!!, false),
+        )
+//        val pageable = PageRequest.of(
+//            paginationData.page,
+//            paginationData.size,
+//            this.scheduleService.getSortOrder(paginationData.sortOrder!!),
+//            this.scheduleService.getSortBy(paginationData.sortBy!!, false),
+//            "id"
+//            )
+        return this.scheduleService
             .getVisits(paginationData.filterType!!, paginationData.filterValue!!,pageable)
     }
     @MessageMapping("update-visit-fire-and-forget")
     fun updateVisit(visit: VisitBoundary): Mono<Void> {
-        return this.schduleService
+        return this.scheduleService
             .update(visit)
     }
     @MessageMapping("deleteAllDocks-fire-and-forget")
     fun deleteDocks(): Mono<Void> {
-        return schduleService.deleteDocks()
+        return scheduleService.deleteDocks()
     }
     @MessageMapping("deleteAllVisits-fire-and-forget")
     fun deleteVisits(): Mono<Void> {
-        return schduleService.deleteVisits()
+        return scheduleService.deleteVisits()
     }
 
     @MessageMapping("get-visit-req-resp")
-    fun getByIds(ids: Flux<IdBoundary>): Flux<VisitBoundary> {
-        return ids
-            .map { it.id!! }
-            .flatMap { this.schduleService
-                .getSpecificVisit(it)}
-            .log()
+    fun getVisitById(visitId: String): Mono<VisitBoundary> {
+        return scheduleService.getSpecificVisit(visitId)
     }
 
     @MessageMapping("publish-visit-req-resp")
     fun create (visit:VisitBoundary): Mono<VisitBoundary> {
-        return this.schduleService.createVisit(visit)
+        return this.scheduleService.createVisit(visit)
     }
 
 }

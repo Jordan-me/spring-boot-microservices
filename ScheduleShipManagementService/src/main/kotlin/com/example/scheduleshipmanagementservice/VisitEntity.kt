@@ -16,7 +16,7 @@ class VisitEntity {
     var shipType: String? = null
     var shipStatus: String? = null
 
-    var shipSize: Size? = null
+    var size: Size? = null
     var weightTons: Float? = null
     var load: LoadBoundary? = null
 

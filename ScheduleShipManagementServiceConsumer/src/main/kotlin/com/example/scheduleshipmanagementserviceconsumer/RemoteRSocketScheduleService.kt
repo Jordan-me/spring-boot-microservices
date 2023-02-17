@@ -33,7 +33,7 @@ class RemoteRSocketScheduleService (
     override fun getAllDocks(sortBy: String, sortOrder: String, size: Int, page: Int): Flux<DockBoundary> {
         val paginationData = PaginationBoundary(sortBy,sortOrder, size, page)
         return this.rsocketRequester
-            .route("getAllDocks-stream")
+            .route("get-docks-req-stream")
             .data(paginationData)
             .retrieveFlux(DockBoundary::class.java)
             .log()
@@ -74,10 +74,13 @@ class RemoteRSocketScheduleService (
         page: Int
     ): Flux<VisitBoundary> {
         val paginationData = PaginationBoundary(filterType, filterValue, sortBy,sortOrder, size, page)
+        val statusList = listOf("WAITING", "ON_DOCK", "LEFT", "UNKNOWN")
         if(filterType == "byTimeRange")
             paginationData.filterValue = "$from,$to"
+        if(filterType == "byShipStatus" && !statusList.contains(filterValue))
+            paginationData.filterValue = "WAITING"
         return this.rsocketRequester
-            .route("get-visits-req-resp")
+            .route("get-visits-req-stream")
             .data(paginationData)
             .retrieveFlux(VisitBoundary::class.java)
             .log()

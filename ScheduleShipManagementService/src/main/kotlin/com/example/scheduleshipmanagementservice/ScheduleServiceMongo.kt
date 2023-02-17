@@ -34,6 +34,24 @@ class ScheduleServiceMongo (
     }
 
     /**
+     * count all the ships on queue and retrive the index of the relevant ship
+     *
+     * @param timeIn a Date to search all ships that came before it
+     * @return Mono of Int that calculate as index of the relevant ship
+     *
+     */
+    fun getNextIndexInQueue(timeIn: Date): Mono<Int> {
+        return this.visitCrud.findAllByShipStatus("WAITING")
+            .filter { visit ->
+                visit.timeIn!!.before(timeIn)
+            }
+            .collectList()
+            .map { visits ->
+                (visits?.size ?: 0) + 1
+            }.onErrorResume { Mono.just(1) }
+    }
+
+    /**
      * update existing visit, if the visit id that given is not exist then there
      * will be no update. for assign ship for a dock then you need to specify relevant dock id
      * on input
@@ -44,6 +62,7 @@ class ScheduleServiceMongo (
      */
     override fun update(visit: VisitBoundary): Mono<Void> {
         return visitCrud.findById(visit.id!!)
+            .switchIfEmpty(Mono.error(VisitNotFoundException("Visit with ID ${visit.id} not found.")))
             .flatMap { visitEntity ->
                 if (visit.shipStatus == "LEFT" &&  visitEntity.shipStatus != "LEFT") {
 //                  the ship is left the port
@@ -51,34 +70,28 @@ class ScheduleServiceMongo (
                     visitEntity.shipStatus = "LEFT"
                     dockCrud.findById(visitEntity.dock!!)
                         .flatMap { dockEntity ->
-                            dockEntity.takenBy = null
-                            dockCrud.save(dockEntity)
+                            if(dockEntity.takenBy.equals(visitEntity.id))
+                                dockEntity.takenBy = null
+                            dockCrud.save(dockEntity).then(visitCrud.save(visitEntity))
                         }
-                        .then(
-                            visitCrud.save(visitEntity)
 
-                        )
-
-                } else if (visit.shipStatus == "UNKNOWN" &&  visitEntity.shipStatus != "UNKNOWN") {
+                } else if (visit.shipStatus == "UNKNOWN" &&  visitEntity.shipStatus != "UNKNOWN" &&  visitEntity.shipStatus != "LEFT") {
                     visitEntity.shipStatus = "UNKNOWN"
                     dockCrud.findById(visitEntity.dock!!)
                         .flatMap { dockEntity ->
-                            dockEntity.takenBy = null
-                            dockCrud.save(dockEntity)
+                            if(dockEntity.takenBy.equals(visitEntity.id))
+                                dockEntity.takenBy = null
+                            dockCrud.save(dockEntity).then(visitCrud.save(visitEntity))
                         }
-                        .then(
-                            visitCrud.save(visitEntity)
-                        )
-                } else if (visitEntity.shipStatus == "LEFT" || visitEntity.shipStatus == "UNKNOWN") {
-//                    the ship is not active anymore
+                }else if (!visitEntity.shipStatus.equals("WAITING")) {
                     Mono.empty()
-                } else{
+                }else{
 //                    assign ship on queue
-                    getAvailableDock(visit.dock!!,visitEntity.shipSize!!)
+                    getAvailableDock(visit.dock!!,visitEntity.size!!)
                     .flatMap { dockEntity ->
                         visitEntity.dock = dockEntity.id
                         visitEntity.shipStatus = "ON_DOCK"
-                        dockEntity.takenBy = visitEntity.shipId
+                        dockEntity.takenBy = visitEntity.id
                         dockCrud.save(dockEntity)
                             .then(visitCrud.save(visitEntity))
                     }
@@ -93,6 +106,9 @@ class ScheduleServiceMongo (
                                 visitEntity.shipStatus = "WAITING"
                                 visitCrud.save(visitEntity)
                             }
+                    }
+                    is VisitNotFoundException ->{
+                        Mono.error(VisitNotFoundException("Visit with ID ${visit.id} not found."))
                     }
                     else -> Mono.error(it)
                 }
@@ -122,25 +138,49 @@ class ScheduleServiceMongo (
                     pageable)
             }
             "byShipId" -> visitCrud.findAllByShipId(filterValue, pageable)
-
+            "byShipStatus" -> visitCrud.findAllByShipStatus(filterValue, pageable)
             else -> visitCrud.findAll(pageable.sort)
-        }.map { visit ->
-            if(visit.shipStatus != "WAITING"){
-//                There is no need to assign the index on our queue
-                Mono.just( this.converter.toBoundary(visit))
-            }else{
-                Mono.just( this.converter.toBoundary(visit))
-                    .zipWith(
-                        getNextIndexInQueue(visit.timeIn!!)
-                    ).map{tuple->
-                        tuple.t1.indexQueue = tuple.t2
-                        tuple.t1
+        }.collectList()
+            .flatMapMany { visits ->
+                val visitsWithIndex = visits.mapIndexed { index, visit ->
+                    Pair(index, visit)
+                }
+                Flux.fromIterable(visitsWithIndex)
+                    .flatMap { pair ->
+                        val index = pair.first
+                        val visit = pair.second
+                        setVisitQueue(visit)
+                            .map { visitBoundary ->
+                                visitBoundary to index
+                            }
+                    }
+                    .collectSortedList(
+                        compareBy<Pair<VisitBoundary, Int>> { it.second }
+                    )
+                    .flatMapMany { sortedVisits ->
+                        Flux.fromIterable(sortedVisits)
+                            .map { it.first }
                     }
             }
-        }.flatMap { it }
 
     }
-
+    fun setVisitQueue(visit: VisitEntity): Mono<VisitBoundary>{
+        return Mono.just(visit)
+            .map{v ->
+                if(v.shipStatus != "WAITING") {
+                    //          There is no need to assign the index on our queue
+                    Mono.just(this.converter.toBoundary(visit))
+                }else{
+                    Mono.just( this.converter.toBoundary(visit))
+                        .zipWith(
+                            getNextIndexInQueue(visit.timeIn!!)
+                        ).map{tuple->
+                            tuple.t1.indexQueue = tuple.t2
+                            tuple.t1
+                        }
+                }
+            }.flatMap { it }
+    }
     /**
      * find available and suitable dock for the ship, the dock must be bigger from the ship, so it
      * could fit in. firs search is for the dock id is given - if its available and on the right
@@ -166,24 +206,12 @@ class ScheduleServiceMongo (
             .switchIfEmpty(Mono.error(DockNotAvailableException("No available docks found")))
     }
 
-    /**
-     * count all the ships on queue and retrive the index of the relevant ship
-     *
-     * @param timeIn a Date to search all ships that came before it
-     * @return Mono of Int that calculate as index of the relevant ship
-     *
-     */
-    fun getNextIndexInQueue(timeIn: Date): Mono<Int> {
-        return visitCrud.countByShipStatusAndTimeInBefore("WAITING", timeIn)
-            .map { (it + 1).toInt() }
-            .onErrorResume { Mono.just(1) } // Return a default value if an error occurs
-    }
-
     override fun getSortOrder(sortOrder: String): Sort.Direction {
-        if(sortOrder == "DESC"){
-            return  Sort.Direction.DESC
+        return if (sortOrder.equals("DESC", ignoreCase = true)) {
+            Sort.Direction.DESC
+        }else {
+            Sort.Direction.ASC
         }
-        return Sort.Direction.ASC
     }
 
     /**
@@ -194,24 +222,23 @@ class ScheduleServiceMongo (
 
 
      */
-    override fun getSortBy(sortBy: String): String {
+    override fun getSortBy(sortBy: String,isDock:Boolean): String {
         return when (sortBy) {
-            "byShipSizeLength" -> "shipSize.length"
-            "byShipSizeWidth" -> "shipSize.width"
-            "byTimeIn" -> "timeIn"
-            "byShipStatus" -> "shipStatus"
-            "byDock" -> "dock"
-            "byShipName" -> "shipName"
-            "byType" -> "type"
-            "byDockSizeLength" -> "size.length"
-            "byDockSizeWidth" -> "size.width"
-            "byTakenBy" -> "takenBy"
- //         "index_queue" -> "shipSize.length"
+            "byShipSizeLength" -> if(!isDock) "size.length" else "Id"
+            "byShipSizeWidth" -> if(!isDock) "size.width" else "Id"
+            "byTimeIn" -> if(!isDock) "timeIn" else "Id"
+            "byShipStatus" -> if(!isDock) "shipStatus" else "Id"
+            "byDock" -> if(!isDock) "dock" else "Id"
+            "byShipName" -> if(!isDock) "shipName" else "Id"
+            "byType" -> {if(isDock) "type" else "Id"}
+            "byDockSizeLength" -> if(isDock) "size.length" else "Id"
+            "byDockSizeWidth" -> if(isDock) "size.width" else "Id"
+            "byTakenBy" -> if(isDock) "takenBy" else "Id"
             else -> "Id"
         }
     }
 
-    override fun create(dock: DockBoundary): Mono<DockBoundary> {
+    override fun createDock(dock: DockBoundary): Mono<DockBoundary> {
         dock.id = null
         dock.takenBy = null
 
@@ -226,24 +253,31 @@ class ScheduleServiceMongo (
     override fun getSpecificVisit(id: String): Mono<VisitBoundary> {
         return this.visitCrud
             .findById(this.converter.convertIdToEntity(id))
-            .map { this.converter.toBoundary(it) }
+            .flatMap { visit ->
+                setVisitQueue(visit)
+            }
             .log()
     }
-
-
 
     override fun createVisit(visit: VisitBoundary): Mono<VisitBoundary> {
         visit.id = null
         visit.timeOut = null
+        visit.timeIn = Date()
         return getAvailableDock(visit.dock!!, visit.shipSize!!)
             .flatMap { dock ->
                 visit.dock = dock.id
-                dock.takenBy = visit.id
                 visit.shipStatus = "ON_DOCK"
-                Mono.zip(
-                    visitCrud.save(converter.toEntity(visit)),
-                    dockCrud.save(dock)
-                ).map { tuple  -> converter.toBoundary(tuple .t1) }
+                visitCrud.save(converter.toEntity(visit))
+                    .map { savedVisit ->
+                        val boundary = converter.toBoundary(savedVisit)
+                        dock.takenBy = savedVisit.id
+                        dockCrud.save(dock)
+                            .then(
+                                Mono.just(boundary)
+                            )
+                    } .flatMap {
+                        it
+                    }
             }
             .onErrorResume {
                 getNextIndexInQueue(visit.timeIn!!)
