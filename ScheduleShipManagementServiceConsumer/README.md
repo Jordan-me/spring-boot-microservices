@@ -46,26 +46,28 @@ Service's consumer name: ScheduleShipManagementServiceConsumer
     reactively returns all existing visits by ship ID.  
 
 #### Pagination
-The sortBy parameter defines by which characteristic the sorting will be performed. If no value is entered for it, the results will be sorted by visitId.  
+The sortBy parameter defines by which characteristic the sorting will be performed. If no value is entered for it, the results will be sorted by visitId.   
+
 * shipName
-* dock
-* time_in
-* shipStatus
-* shipSizeLength
-* shipSizeWidth
+* dock  
+* time_in  
+* shipStatus  
+* shipSizeLength  
+* shipSizeWidth  
 
 An example of sorting according to the length of the ship:  
     GET/visit?sortBy=byShipSizeLength&sortOrder={order}&page={page}&size={size}  
 
-
+  
 An example of sorting according to the width of the ship:  
     GET/visit?sortBy=byShipSizeWidth&sortOrder={order}&page={page}&size={size}  
-
+  
 In a GET/dock request, the sorting value can be dockId (default value) SizeLength, SizeWidth, taken_by, Type
 An example of sorting by length:  
     GET/dock?sortBy=bySizeLength&sortOrder={order}&page={page}&size={size}  
 An example of sorting by the width:  
-    GET/dock?sortBy=bySizeWidth&sortOrder={order}&page={page}&size={size}  
+    GET/dock?sortBy=bySizeWidth&sortOrder={order}&page={page}&size={size}    
+
 * If the optional sortOrder parameter is not specified, the sorting will be in ascending order. The value of the parameter can be one of these values:  
 
   * ASC - ascending order
@@ -92,7 +94,8 @@ Time_out: Date and time signature representing when the ship left port.
 
 shipType: A string representing the type of ship visiting the port.  
 
-shipStatus: A string showing the status of the ship visit. can be one of these values:
+shipStatus: A string showing the status of the ship visit. can be one of these values:  
+
 - WAITING - When you define a new visit using the POST request, the status will be WAITING if there is no free dock where the ship can enter.  
 
 - ON DOCK - When a ship is at the dock, the status will change to ON DOCK when the ship leaves the queue and a dock has become available. (in the POST visit request if there is a free dock or in the PUT visit request when a dock is assigned to the ship's visit)
