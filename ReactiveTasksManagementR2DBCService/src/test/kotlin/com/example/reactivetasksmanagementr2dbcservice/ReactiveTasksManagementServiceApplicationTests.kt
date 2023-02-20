@@ -1,4 +1,4 @@
-package com.example.reactivetasksmanagementservice
+package com.example.reactivetasksmanagementr2dbcservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

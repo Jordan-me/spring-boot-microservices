@@ -1,10 +1,10 @@
-package com.example.reactivetasksmanagementservice
+package com.example.rsockettickermanagementservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class ReactiveTasksManagementServiceApplicationTests {
+class RSocketTickerManagementServiceApplicationTests {
 
 	@Test
 	fun contextLoads() {
