@@ -12,6 +12,7 @@ You can find our repository at:
     <p>This API stands for users management.</p> 
     <a href="http://localhost:8081/swagger-ui/index.html">Users API</a>
 </div>  
+
 [Extended description](ScheduleShipManagementServiceConsumer/README.md)
 
 ### Tasks
@@ -19,7 +20,8 @@ You can find our repository at:
     <img src="https://drive.google.com/uc?export=§view&id=1AZHzQ_ujJDDRwwx_GirPAWc2ylO22zod" width="350px" /> 
     <p>This API stands for tasks management.</p> 
     <a href="http://localhost:8082/webjars/swagger-ui/index.html">Tasks API</a>
-</div>  
+</div>
+
 [Extended description](ScheduleShipManagementServiceConsumer/README.md)
 
 ### Tickers
@@ -29,6 +31,7 @@ You can find our repository at:
     <p>This API stands for tickers management.</p> 
     <a href="http://localhost:8083/webjars/swagger-ui/index.html">Tickers API</a>
 </div>  
+
 [Extended description](ScheduleShipManagementServiceConsumer/README.md)
 
 ### Schedule-Ships
@@ -38,6 +41,7 @@ You can find our repository at:
     <p>This API stands for ships management.</p> 
     <a href="http://localhost:8084/webjars/swagger-ui/index.html">Schedule Ships API</a>
 </div>  
+
 [Extended description](ScheduleShipManagementService/README.md)
 
 * Version: 2023
