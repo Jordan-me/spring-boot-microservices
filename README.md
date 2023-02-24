@@ -25,7 +25,7 @@ Cloud Computing 2023a course is a repository of examples, sample projects, and c
 
 ### Tickers
 <div align="center">
-    <img src="https://drive.google.com/uc?export=§view&id=1aw7wx1wP6rCBOsCrbN-e9473UipNOOlG" width="350px" style="margin-right=50px"/> 
+    <img src="https://drive.google.com/uc?export=§view&id=1aw7wx1wP6rCBOsCrbN-e9473UipNOOlG" width="350px" style="margin-right=350px;"/> 
     <img src="https://drive.google.com/uc?export=§view&id=14wqAbd3jC9Ytm029ywCpMpK_8k_Ny_y_" width="350px" /> 
     <p>This API stands for tickers management.</p> 
     <a href="http://localhost:8083/webjars/swagger-ui/index.html">Tasks API</a>
