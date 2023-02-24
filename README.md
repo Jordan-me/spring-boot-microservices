@@ -12,8 +12,8 @@ Cloud Computing 2023a course is a repository of examples, sample projects, and c
 ### Users
 <div align="center">
     <img src="https://drive.google.com/uc?export=§view&id=1Xc6JP2dlaMenSwXc4f3DCAFkBvoee7vM" width="350px" /> 
-    <span>This API stands for users management.
-    [Users API](http://localhost:8081/swagger-ui/index.html)</span> 
+    <p>This API stands for users management.</p> 
+    [Users API](http://localhost:8081/swagger-ui/index.html)
 </div>
 
 * Version: 2023
