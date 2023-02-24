@@ -15,20 +15,22 @@ Cloud Computing 2023a course is a repository of examples, sample projects, and c
     <p>This API stands for users management.</p> 
     <a href="http://localhost:8081/swagger-ui/index.html">Users API</a>
 </div>  
+
 ### Tasks
 <div align="center">
     <img src="https://drive.google.com/uc?export=§view&id=1AZHzQ_ujJDDRwwx_GirPAWc2ylO22zod" width="350px" /> 
     <p>This API stands for tasks management.</p> 
     <a href="http://localhost:8082/webjars/swagger-ui/index.html">Tasks API</a>
 </div>  
+
 ### Tickers
 <div align="center">
-    <img src="https://drive.google.com/uc?export=§view&id=1aw7wx1wP6rCBOsCrbN-e9473UipNOOlG" width="350px" /> 
-    <span>     </span>
+    <img src="https://drive.google.com/uc?export=§view&id=1aw7wx1wP6rCBOsCrbN-e9473UipNOOlG" width="350px" style="margin-right=50px"/> 
     <img src="https://drive.google.com/uc?export=§view&id=14wqAbd3jC9Ytm029ywCpMpK_8k_Ny_y_" width="350px" /> 
     <p>This API stands for tickers management.</p> 
     <a href="http://localhost:8083/webjars/swagger-ui/index.html">Tasks API</a>
 </div>  
+
 ### Tasks
 
 
