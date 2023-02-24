@@ -32,7 +32,7 @@ You can find our repository at:
     <a href="http://localhost:8083/webjars/swagger-ui/index.html">Tickers API</a>
 </div>  
 
-[Extended description](ScheduleShipManagementServiceConsumer/README.md)
+[Extended description](RSocketTickerManagementService/README.md)
 
 ### Schedule-Ships
 <div align="center">
