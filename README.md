@@ -8,12 +8,17 @@ You can find our repository at:
 Names: Yarden Dahan, Idan Sorany, Tor Hanan
 Cloud Computing 2023a course is a repository of examples, sample projects, and code sections covered through the Afeka's Cloud Computing Class  
 
-### What is this repository for? 
+### Services
 ### Users
 <div align="center">
     <img src="https://drive.google.com/uc?export=§view&id=1Xc6JP2dlaMenSwXc4f3DCAFkBvoee7vM" width="350px" /> 
     <p>This API stands for users management.</p> 
-    <a href="[/Jordan-me/spring-boot-microservices/blob/master/ScheduleShipManagementService/README.md](http://localhost:8081/swagger-ui/index.html)">Users API</a>
+    <a href="http://localhost:8081/swagger-ui/index.html">Users API</a>
+</div>
+<div align="center">
+    <img src="https://drive.google.com/uc?export=§view&id=1AZHzQ_ujJDDRwwx_GirPAWc2ylO22zod" width="350px" /> 
+    <p>This API stands for tasks management.</p> 
+    <a href="http://localhost:8082/webjars/swagger-ui/index.html">Tasks API</a>
 </div>
 
 * Version: 2023
