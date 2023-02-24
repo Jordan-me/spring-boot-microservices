@@ -31,8 +31,13 @@ Cloud Computing 2023a course is a repository of examples, sample projects, and c
     <a href="http://localhost:8083/webjars/swagger-ui/index.html">Tickers API</a>
 </div>  
 
-### Tasks
-
+### Schedule-Ships
+<div align="center">
+    <img src="https://drive.google.com/uc?export=§view&id=1gDBlK7OM8vRqEcW5TzP3yswbgmJwwwvS" width="350px"/> 
+    <img src="https://drive.google.com/uc?export=§view&id=1SaNQZdMq9GL_hgndg_7vfoIe6aOOXPXe" width="350px"/> 
+    <p>This API stands for ships management.</p> 
+    <a href="http://localhost:8084/webjars/swagger-ui/index.html">Schedule Ships API</a>
+</div>  
 
 * Version: 2023
 
