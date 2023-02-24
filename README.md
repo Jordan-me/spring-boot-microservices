@@ -13,7 +13,7 @@ You can find our repository at:
     <a href="http://localhost:8081/swagger-ui/index.html">Users API</a>
 </div>  
 
-[Extended description](ScheduleShipManagementServiceConsumer/README.md)
+[Extended description](serviceusers/README.md)
 
 ### Tasks
 <div align="center">
@@ -22,7 +22,7 @@ You can find our repository at:
     <a href="http://localhost:8082/webjars/swagger-ui/index.html">Tasks API</a>
 </div>
 
-[Extended description](ScheduleShipManagementServiceConsumer/README.md)
+[Extended description](ReactiveTasksManagementService/README.md)
 
 ### Tickers
 <div align="center">
